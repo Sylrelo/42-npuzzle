@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	_"container/list"
+	"container/list"
+	_"container/heap"
 )
 
 const (
@@ -11,6 +12,8 @@ const (
 	LEFT 	= iota
 	RIGHT 	= iota
 )
+const NSIZE = 9
+const NCOL 	= 3
 
 func FindIndex(haystack [9]int, needle int) int {
 	for i, n := range haystack {
@@ -30,20 +33,19 @@ func Same(a [9]int, b [9]int) bool {
 	return true
 }
 
-// type Node struct {
-// 	relative   *Node
-// 	nbrMove    int
-// 	cout       int
-// 	status     int
-// 	StateBoard [][]int
-// }
+type Node struct {
+	parent		*Node
+	board		[9]int
+	move		int
+	cost		int
+	distance	int
+}
 
-// type Solver struct {
-// 	nbrRow    int
-// 	openList  *list.List
-// 	closeList *list.List
-// 	Heuristic func([][]int, int) int
-// }
+type Solver struct {
+	open		*list.List
+	closed		*list.List
+	ncol		int
+}
 
 func PrintBoard(board [9]int) {
 	for i := 0; i < 3; i++ {
@@ -60,85 +62,92 @@ func PrintBoard(board [9]int) {
 	fmt.Println("")
 }
 
-func move(board [9]int, direction int) [9]int {
+func Move(board [9]int, direction int) (bool, [9]int) {
 	zindex := FindIndex(board, 0)
-	
-	PrintBoard(board)
-	_ = zindex
 
 	switch direction {
 		case UP:
-			if (zindex - 3 >= 0) {
-				board[zindex] = board[zindex - 3]
-				board[zindex - 3] = 0
-				fmt.Print("UP")
+			if (zindex - NCOL >= 0) {
+				board[zindex] = board[zindex - NCOL]
+				board[zindex - NCOL] = 0
+				return true, board
 			}
 		case DOWN:
-			if (zindex + 3 < 9) {
-				board[zindex] = board[zindex + 3]
-				board[zindex + 3] = 0
-				fmt.Print("DOWN")
+			if (zindex + NCOL < NSIZE) {
+				board[zindex] = board[zindex + NCOL]
+				board[zindex + NCOL] = 0
+				return true, board
 			}
 		case LEFT:
-			if (zindex % 3 >= 1) {
+			if (zindex % NCOL >= 1) {
 				board[zindex] = board[zindex - 1]
 				board[zindex - 1] = 0
-				fmt.Print("LEFT")
+				return true, board
 			}
 		case RIGHT:
-			if (zindex % 3 <= 1) {
+			if (zindex % NCOL <= 1) {
 				board[zindex] = board[zindex + 1]
 				board[zindex + 1] = 0
-				fmt.Print("RIGHT")
+				return true, board
 			}
 		default:
 			fmt.Print("--")
 	}
-	fmt.Println("")
-	PrintBoard(board)
-
-	fmt.Println("")
-	fmt.Println("--")
-	return board
+	return false, board
 }
 
 func main() {
-	//var base [3][3] int
-
 	base := [9]int {1, 8, 2, 0, 4, 3, 7, 6, 5}
+	var solver Solver
 	//base := [3][3] int {{1,2,3}, {4,5,6}, {7,8,9}}
 
+	solver.open 	= list.New()
+	solver.closed 	= list.New()
+
+	var node Node
+
+	node = Node{
+		board: base,
+		move: 5,
+		cost: 0,
+		distance: 0}
+
+	_ = node
+
+	solver.open.PushBack(base)
+
+	fmt.Println(solver.open)
+	for e := solver.open.Front(); e != nil; e = e.Next() {
+        fmt.Println(e.Value)
+    }
+
+	for i := 0; i < 2; i++ {
+		var state, new_board = Move(base, RIGHT)
+
+		_ = state
+		_ = new_board
+	}
 
 
-	base = [9]int {1, 8, 2, 0, 4, 3, 7, 6, 5}
-	move(base, RIGHT)
-	base = [9]int {1, 8, 0, 2, 4, 3, 7, 6, 5}
-	move(base, RIGHT)
-	base = [9]int {1, 0, 8, 2, 4, 3, 7, 6, 5}
-	move(base, RIGHT)
-	base = [9]int {0, 1, 8, 2, 4, 3, 7, 6, 5}
-	move(base, RIGHT)
-	base = [9]int {4, 1, 8, 2, 0, 3, 7, 6, 5}
-	move(base, RIGHT)
-	base = [9]int {4, 1, 8, 2, 3, 0, 7, 6, 5}
-	move(base, RIGHT)
-	base = [9]int {4, 1, 8, 2, 3, 7, 0, 6, 5}
-	move(base, RIGHT)
-	base = [9]int {4, 1, 8, 2, 3, 7, 6, 0, 5}
-	move(base, RIGHT)
-	base = [9]int {4, 1, 8, 2, 3, 7, 6, 5, 0}
-	move(base, RIGHT)
+	// base = [9]int {1, 8, 2, 0, 4, 3, 7, 6, 5}
+	// Move(base, RIGHT)
+	// base = [9]int {1, 8, 0, 2, 4, 3, 7, 6, 5}
+	// Move(base, RIGHT)
+	// base = [9]int {1, 0, 8, 2, 4, 3, 7, 6, 5}
+	// Move(base, RIGHT)
+	// base = [9]int {0, 1, 8, 2, 4, 3, 7, 6, 5}
+	// Move(base, RIGHT)
+	// base = [9]int {4, 1, 8, 2, 0, 3, 7, 6, 5}
+	// Move(base, RIGHT)
+	// base = [9]int {4, 1, 8, 2, 3, 0, 7, 6, 5}
+	// Move(base, RIGHT)
+	// base = [9]int {4, 1, 8, 2, 3, 7, 0, 6, 5}
+	// Move(base, RIGHT)
+	// base = [9]int {4, 1, 8, 2, 3, 7, 6, 0, 5}
+	// Move(base, RIGHT)
+	// base = [9]int {4, 1, 8, 2, 3, 7, 6, 5, 0}
+	// Move(base, RIGHT)
 
 	_ = base
 
-	for i := 0; i < 1; i++ {
-		//tmp := base
-
-		//move(tmp, UP)
-		// move(tmp, DOWN)
-		// move(tmp, LEFT)
-		// move(tmp, RIGHT)
-		// fmt.Println(tmp)
-		//fmt.Println(caca)
-	}
 }
