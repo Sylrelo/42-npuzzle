@@ -69,23 +69,33 @@ func move(board [9]int, direction int) [9]int {
 	switch direction {
 		case UP:
 			if (zindex - 3 >= 0) {
+				board[zindex] = board[zindex - 3]
+				board[zindex - 3] = 0
 				fmt.Print("UP")
 			}
 		case DOWN:
-			if (zindex + 3 <= 9) {
+			if (zindex + 3 < 9) {
+				board[zindex] = board[zindex + 3]
+				board[zindex + 3] = 0
 				fmt.Print("DOWN")
 			}
 		case LEFT:
 			if (zindex % 3 >= 1) {
+				board[zindex] = board[zindex - 1]
+				board[zindex - 1] = 0
 				fmt.Print("LEFT")
 			}
 		case RIGHT:
 			if (zindex % 3 <= 1) {
+				board[zindex] = board[zindex + 1]
+				board[zindex + 1] = 0
 				fmt.Print("RIGHT")
 			}
 		default:
 			fmt.Print("--")
 	}
+	fmt.Println("")
+	PrintBoard(board)
 
 	fmt.Println("")
 	fmt.Println("--")
@@ -101,23 +111,23 @@ func main() {
 
 
 	base = [9]int {1, 8, 2, 0, 4, 3, 7, 6, 5}
-	move(base, LEFT)
+	move(base, RIGHT)
 	base = [9]int {1, 8, 0, 2, 4, 3, 7, 6, 5}
-	move(base, LEFT)
+	move(base, RIGHT)
 	base = [9]int {1, 0, 8, 2, 4, 3, 7, 6, 5}
-	move(base, LEFT)
+	move(base, RIGHT)
 	base = [9]int {0, 1, 8, 2, 4, 3, 7, 6, 5}
-	move(base, LEFT)
+	move(base, RIGHT)
 	base = [9]int {4, 1, 8, 2, 0, 3, 7, 6, 5}
-	move(base, LEFT)
+	move(base, RIGHT)
 	base = [9]int {4, 1, 8, 2, 3, 0, 7, 6, 5}
-	move(base, LEFT)
+	move(base, RIGHT)
 	base = [9]int {4, 1, 8, 2, 3, 7, 0, 6, 5}
-	move(base, LEFT)
+	move(base, RIGHT)
 	base = [9]int {4, 1, 8, 2, 3, 7, 6, 0, 5}
-	move(base, LEFT)
+	move(base, RIGHT)
 	base = [9]int {4, 1, 8, 2, 3, 7, 6, 5, 0}
-	move(base, LEFT)
+	move(base, RIGHT)
 
 	_ = base
 
