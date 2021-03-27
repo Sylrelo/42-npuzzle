@@ -6,62 +6,6 @@ import (
 	_"container/heap"
 )
 
-const (
-	UP 		= iota
-	DOWN 	= iota
-	LEFT 	= iota
-	RIGHT 	= iota
-)
-const NSIZE = 9
-const NCOL 	= 3
-
-func FindIndex(haystack [9]int, needle int) int {
-	for i, n := range haystack {
-		if (needle == n) {
-			return i
-		}
-	}
-	return -1
-}
-
-func Same(a [9]int, b [9]int) bool {
-	for i, n := range a {
-		if (b[i] != n) {
-			return false
-		}
-	}
-	return true
-}
-
-type Node struct {
-	parent		*Node
-	board		[9]int
-	move		int
-	cost		int
-	distance	int
-}
-
-type Solver struct {
-	open		*list.List
-	closed		*list.List
-	ncol		int
-}
-
-func PrintBoard(board [9]int) {
-	for i := 0; i < 3; i++ {
-		fmt.Print(board[0 + i], " ")
-	}
-	fmt.Println("")
-	for i := 0; i < 3; i++ {
-		fmt.Print(board[3 + i], " ")
-	}
-	fmt.Println("")
-	for i := 0; i < 3; i++ {
-		fmt.Print(board[6 + i], " ")
-	}
-	fmt.Println("")
-}
-
 func Move(board [9]int, direction int) (bool, [9]int) {
 	zindex := FindIndex(board, 0)
 
