@@ -52,7 +52,7 @@ func main() {
 
 	node = Node{
 		board: base,
-		move: 5,
+		move: NONE,
 		cost: 0,
 		distance: 0}
 

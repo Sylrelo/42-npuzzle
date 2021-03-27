@@ -6,6 +6,7 @@ import (
 )
 
 const (
+	NONE	= iota
 	UP 		= iota
 	DOWN 	= iota
 	LEFT 	= iota
