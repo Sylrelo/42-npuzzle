@@ -80,37 +80,15 @@ func main() {
 	for i := 0; i < 2; i++ {
 		closed_set = append(closed_set, node.board)
 
+		// node = open_set 			get highest priority
+		// node.board == goal 		stop
+
 		Move(&open_set, closed_set, node, UP)
 		Move(&open_set, closed_set, node, DOWN)
 		Move(&open_set, closed_set, node, LEFT)
 		Move(&open_set, closed_set, node, RIGHT)
-
-		//_ = state
-		//_ = new_board
 	}
 
 	fmt.Println(closed_set)
 	fmt.Println(open_set)
-
-	// base = [9]int {1, 8, 2, 0, 4, 3, 7, 6, 5}
-	// Move(base, RIGHT)
-	// base = [9]int {1, 8, 0, 2, 4, 3, 7, 6, 5}
-	// Move(base, RIGHT)
-	// base = [9]int {1, 0, 8, 2, 4, 3, 7, 6, 5}
-	// Move(base, RIGHT)
-	// base = [9]int {0, 1, 8, 2, 4, 3, 7, 6, 5}
-	// Move(base, RIGHT)
-	// base = [9]int {4, 1, 8, 2, 0, 3, 7, 6, 5}
-	// Move(base, RIGHT)
-	// base = [9]int {4, 1, 8, 2, 3, 0, 7, 6, 5}
-	// Move(base, RIGHT)
-	// base = [9]int {4, 1, 8, 2, 3, 7, 0, 6, 5}
-	// Move(base, RIGHT)
-	// base = [9]int {4, 1, 8, 2, 3, 7, 6, 0, 5}
-	// Move(base, RIGHT)
-	// base = [9]int {4, 1, 8, 2, 3, 7, 6, 5, 0}
-	// Move(base, RIGHT)
-
-	_ = base
-
 }
