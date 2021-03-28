@@ -1,16 +1,20 @@
 package main
 
 import (
+	"bufio"
 	"container/heap"
-	_ "container/list"
 	"fmt"
+	"os"
+	"strconv"
+	"strings"
+	"time"
 )
 
 func NewNode(open_set *PriorityQueue, closed_set [][]int, current_node Node, new_board []int, zindex int, direction int) {
 	goal := []int{1, 2, 3, 8, 0, 4, 7, 6, 5}
 
 	if Same(closed_set, new_board) {
-		fmt.Println("\033[33m~ Board already explored. Skipping.\033[0m")
+		//fmt.Println("\033[33m~ Board already explored. Skipping.\033[0m")
 		return
 	}
 
@@ -25,7 +29,7 @@ func NewNode(open_set *PriorityQueue, closed_set [][]int, current_node Node, new
 		zindex:       zindex}
 
 	heap.Push(open_set, &Item{node: new_node, priority: priority})
-	fmt.Println("\033[1;36m+ Queue push\033[0m")
+	//fmt.Println("\033[1;36m+ Queue push\033[0m")
 }
 
 func Move(open_set *PriorityQueue, closed_set [][]int, current_node Node, direction int) {
@@ -63,9 +67,10 @@ func Move(open_set *PriorityQueue, closed_set [][]int, current_node Node, direct
 }
 
 func main() {
-	base 			:= []int{1, 8, 2, 0, 4, 3, 7, 6, 5}
 	open_set 		:= make(PriorityQueue, 0)
+	goal			:= []int{1, 2, 3, 8, 0, 4, 7, 6, 5}
 
+	var base 		[]int
 	var node 		Node
 	var size 		Size
 	var closed_set 	[][]int
@@ -73,12 +78,26 @@ func main() {
 	size.nsize 		= 9
 	size.ncol 		= 3
 
+	reader 		:= bufio.NewReader(os.Stdin)
+	content, _ 	:= reader.ReadString(0)
+	content_splitted := strings.Split(content, "\n")
 
-	snail := GenerateSnail(3, 3)
 
-	PrintBoard(snail, size)
+	if content_splitted[0][0] == '#' { 
+		size.ncol, _ = strconv.Atoi(content_splitted[1])
 
-	return 
+		for i := 2; i <= 4; i++ {
+
+			split_values := strings.Split(content_splitted[i], " ")
+			for _, n := range split_values {
+				atoi, _ := strconv.Atoi(n)
+				base = append(base, atoi)
+			}
+		}
+	}
+
+	time_start := time.Now()
+	
 	node = Node{
 		board:        base,
 		move:         NONE,
@@ -90,18 +109,24 @@ func main() {
 
 	heap.Push(&open_set, &Item{node: node, priority: 0})
 
-	//heap.Init(&open_set)
-
-	for i := 0; i < 8; i++ {
+	oh := 0
+	for oh < 10000 {
 
 		if open_set.Len() == 0 {
 			fmt.Println("\033[1;31mEmpty queue, break.\033[0m")
 			break
 		}
-		fmt.Println("\033[1;34m- Queue pop.\033[0m")
+		//fmt.Println("\033[1;34m- Queue pop.\033[0m")
 		node := heap.Pop(&open_set).(*Item).node
 
-		PrintBoard(node.board, size)
+		if Compare(node.board, goal) {
+			fmt.Println("\033[1;34mSolution Found !\033[0m")
+			fmt.Println(node.parent.parent_count, " parents")
+			fmt.Println(len(closed_set), " closed sets")
+			fmt.Println(len(open_set), " open sets")
+			break 
+		}
+		//PrintBoard(node.board, size)
 		closed_set = append(closed_set, node.board)
 
 		//open_set.Push(&Item{value: node, priority: i})
@@ -112,14 +137,17 @@ func main() {
 		Move(&open_set, closed_set, node, DOWN)
 		Move(&open_set, closed_set, node, LEFT)
 		Move(&open_set, closed_set, node, RIGHT)
+		oh++
 	}
+	time_elapsed := time.Since(time_start)
 
-	fmt.Println(closed_set)
-	fmt.Println(open_set)
+	fmt.Printf("Time taken %s \n", time_elapsed)
+	//fmt.Println(closed_set)
+	//fmt.Println(open_set)
 
-	for open_set.Len() > 0 {
-		cnode := heap.Pop(&open_set).(*Item)
-		fmt.Println(cnode.priority, cnode.node.move, cnode.node.parent_count, cnode.node.board)
-	}
+	//for open_set.Len() > 0 {
+		//cnode := heap.Pop(&open_set).(*Item)
+		//fmt.Println(cnode.priority, cnode.node.move, cnode.node.parent_count, cnode.node.board)
+	//}
 
 }

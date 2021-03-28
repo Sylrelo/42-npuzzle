@@ -20,7 +20,7 @@ func ManhattanDistance(board []int, goal []int) int {
 	for i := range board {
 		if board[i] != 0 {
 			pos := FindIndex(goal, board[i])
-			total += math.Abs(float64(i%NSIZE-pos%NSIZE)) + math.Abs(float64(i/NSIZE-pos/NSIZE))
+			total += math.Abs(float64(i % NSIZE - pos % NSIZE)) + math.Abs(float64(i / NSIZE - pos / NSIZE))
 		}
 	}
 	return int(total)

@@ -26,6 +26,16 @@ func Same(a [][]int, b []int) bool {
 	return false
 }
 
+func Compare(a []int, b []int) bool {
+	count := 0
+	for i, n := range a {
+		if b[i] == n {
+			count++
+		}
+	}
+	return count == len(a)
+}
+
 func PrintBoard(board []int, size Size) {
 	for i := 0; i < size.ncol; i++ {
 		fmt.Print(board[0+i], " ")
@@ -41,43 +51,43 @@ func PrintBoard(board []int, size Size) {
 	fmt.Println("\n ")
 }
 
-func GenerateSnail(col int, row int) []int {
-	result 		:= make([]int, col * row)
-	//direction 	:= RIGHT
-	irow		:= 0
-	crow		:= 0
-	dir			:= 1
-	//icol		:= 0
-	//istart		:= 0
+// func GenerateSnail(col int, row int) []int {
+// 	result 		:= make([]int, col * row)
+// 	//direction 	:= RIGHT
+// 	irow		:= 0
+// 	crow		:= 0
+// 	dir			:= 1
+// 	//icol		:= 0
+// 	//istart		:= 0
 
-	for i := col * row - 1; i >= 0; i-- {
+// 	for i := col * row - 1; i >= 0; i-- {
 
-		irow = 0
-		for irow < (col * row) {
+// 		irow = 0
+// 		for irow < (col * row) {
 
-			crow += dir
-			irow++
+// 			crow += dir
+// 			irow++
 
-			dir *= -1
-		}
-		// result[i - 1] = 0
-		// if direction == RIGHT && icol < col {
-		// 	result[i - 1] = i
-		// 	icol++
-		// }
-		// if icol == 3 && direction == RIGHT {
-		// 	direction = DOWN
-		// 	irow = 0
-		// 	istart = row + icol
-		// }
-		// if direction == DOWN && irow <= 1 {
-		// 	result[istart + (3 * irow) - 1] = 9
-		// 	irow++
-		// }
-		// _ = istart
+// 			dir *= -1
+// 		}
+// 		// result[i - 1] = 0
+// 		// if direction == RIGHT && icol < col {
+// 		// 	result[i - 1] = i
+// 		// 	icol++
+// 		// }
+// 		// if icol == 3 && direction == RIGHT {
+// 		// 	direction = DOWN
+// 		// 	irow = 0
+// 		// 	istart = row + icol
+// 		// }
+// 		// if direction == DOWN && irow <= 1 {
+// 		// 	result[istart + (3 * irow) - 1] = 9
+// 		// 	irow++
+// 		// }
+// 		// _ = istart
 		
-	}
+// 	}
 
-	_ = irow
-	return result
-}
+// 	_ = irow
+// 	return result
+// }
