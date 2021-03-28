@@ -10,7 +10,6 @@ func NewNode(open_set *[]Node, closed_set [][]int, current_node Node, new_board 
 	goal := []int{1, 2, 3, 8, 0, 4, 7, 6, 5}
 
 	priority := current_node.parent_count + ManhattanDistance(current_node.board, goal)
-
 	new_node := Node{
 		board:        new_board,
 		move:         direction,
@@ -32,26 +31,24 @@ func Move(open_set *[]Node, closed_set [][]int, current_node Node, direction int
 			new_board[zindex] = new_board[zindex-NCOL]
 			new_board[zindex-NCOL] = 0
 			NewNode(open_set, closed_set, current_node, new_board, direction)
-			//open_set.app
-			//return true, new_board
 		}
 	case DOWN:
 		if zindex+NCOL < NSIZE {
 			new_board[zindex] = new_board[zindex+NCOL]
 			new_board[zindex+NCOL] = 0
-			//return true, new_board
+			NewNode(open_set, closed_set, current_node, new_board, direction)
 		}
 	case LEFT:
 		if zindex%NCOL >= 1 {
 			new_board[zindex] = new_board[zindex-1]
 			new_board[zindex-1] = 0
-			//return true, new_board
+			NewNode(open_set, closed_set, current_node, new_board, direction)
 		}
 	case RIGHT:
 		if zindex%NCOL <= 1 {
 			new_board[zindex] = new_board[zindex+1]
 			new_board[zindex+1] = 0
-			//return true, board
+			NewNode(open_set, closed_set, current_node, new_board, direction)
 		}
 	default:
 		fmt.Print("--")
@@ -84,6 +81,9 @@ func main() {
 		closed_set = append(closed_set, node.board)
 
 		Move(&open_set, closed_set, node, UP)
+		Move(&open_set, closed_set, node, DOWN)
+		Move(&open_set, closed_set, node, LEFT)
+		Move(&open_set, closed_set, node, RIGHT)
 
 		//_ = state
 		//_ = new_board
