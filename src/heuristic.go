@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -76,35 +75,49 @@ func LinearConflict(board []int, goal []int) int {
 	conflicts = 0
 
 	for i := 1; i < glen; i++ {
-		pb := FindIndex(board, i)
-		pg := FindIndex(goal, i)
+		for j := i + 1; j < glen; j++ {
+			gx := FindIndex(goal, i) % NCOL
+			gy := FindIndex(goal, j) / NCOL
+			cx := FindIndex(board, i) % NCOL
+			cy := FindIndex(board, j) / NCOL
 
-		gx := pg % NCOL
-		gy := pg / NCOL
-		cx := pb % NCOL
-		cy := pb / NCOL
-
-		fmt.Println("[", i, "]", cx, cy, " - ", gx, gy)
-		if cx == gx {
-			if (cy > gy) {
-				fmt.Println("CONFLIT 1")
-				conflicts++
-			}
-			if (cy < gy) {
-				fmt.Println("CONFLIT 2")	
-				conflicts++
-			}
+			_ = gx
+			_ = cx
+			_ = gy
+			_ = cy
 		}
-		if cy == gy  {
-			if (cx > gx) {
+
+		//pg := FindIndex(goal, i)
+		//gx := pg % NCOL
+		//gy := pg / NCOL
+//
+		//pb := FindIndex(board, i)
+		//cx := pb % NCOL
+		//cy := pb / NCOL
+
+		//fmt.Println("[", i, "]", cx, cy, " - ", gx, gy)
+
+		//if cy == gy  {
+			//if (cx - gx == 1) {
 				//fmt.Println("CONFLIT 3")
-				conflicts++
-			}
-			if (cx < gx) {
+				//conflicts++
+			//}
+			//if (cx - gx == -1) {
 				//fmt.Println("CONFLIT 4")
-				conflicts++
-			}
-		}
+				//conflicts++
+			//}
+		//}
+
+		//if cx == gx {
+			//if (cy - gy == 1) {
+				//fmt.Println("CONFLIT 1")
+				//conflicts++
+			//}
+			//if (cy - gy == -1) {
+				//fmt.Println("CONFLIT 2")	
+				//conflicts++
+			//}
+		//}
 	}
 
 	return conflicts

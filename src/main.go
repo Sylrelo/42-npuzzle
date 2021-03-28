@@ -145,7 +145,7 @@ func main() {
 	PrintBoard(patate, size)
 
 	fmt.Println("Conflicts : ", LinearConflict(patate, goal))
-	return 
+	//return 
 
 
 	PrintBoard(base, size)

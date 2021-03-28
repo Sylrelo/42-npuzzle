@@ -2,6 +2,12 @@ package main
 
 import "fmt"
 
+func FindIndexLinearConflict(goal []int, board []int, g int, b int) [4]int {
+	ret := [4]int{0, 0, 0, 0}
+
+	return ret
+}
+
 func FindIndex(haystack []int, needle int) int {
 	for i, n := range haystack {
 		if needle == n {
