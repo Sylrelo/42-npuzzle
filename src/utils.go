@@ -42,17 +42,17 @@ func Compare(a []int, b []int) bool {
 	return count == len(a)
 }
 
-func PrintBoard(board []int, size Size) {
-	for i := 0; i < size.ncol; i++ {
+func PrintBoard(board []int, size int) {
+	for i := 0; i < size; i++ {
 		fmt.Print(board[0+i], " ")
 	}
 	fmt.Println("")
-	for i := 0; i < size.ncol; i++ {
-		fmt.Print(board[(size.ncol)+i], " ")
+	for i := 0; i < size; i++ {
+		fmt.Print(board[(size)+i], " ")
 	}
 	fmt.Println("")
-	for i := 0; i < size.ncol; i++ {
-		fmt.Print(board[(size.ncol*2)+i], " ")
+	for i := 0; i < size; i++ {
+		fmt.Print(board[(size*2)+i], " ")
 	}
 	fmt.Println("\n ")
 }

@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func NewNode(open_set *PriorityQueue, closed_set [][]int, current_node Node, new_board []int, zindex int, direction int) {
+func NewNode(open_set *PriorityQueue, closed_set [][]int, current_node Node, new_board []int, zindex int, direction int, size int) {
 	goal := []int{1, 2, 3, 8, 0, 4, 7, 6, 5}
 
 	if Same(closed_set, new_board) {
@@ -19,7 +19,7 @@ func NewNode(open_set *PriorityQueue, closed_set [][]int, current_node Node, new
 		return
 	}
 
-	priority := current_node.parent_count + ManhattanDistance(new_board, goal) + (2 * LinearConflict(new_board, goal))
+	priority := current_node.parent_count + ManhattanDistance(new_board, goal, size) + (2 * LinearConflict(new_board, goal, size))
 	new_node := Node{
 		board:        new_board,
 		move:         direction,
@@ -33,7 +33,7 @@ func NewNode(open_set *PriorityQueue, closed_set [][]int, current_node Node, new
 	//fmt.Println("\033[1;36m+ Queue push\033[0m")
 }
 
-func Move(open_set *PriorityQueue, closed_set [][]int, current_node Node, direction int) {
+func Move(open_set *PriorityQueue, closed_set [][]int, current_node Node, size int, direction int) {
 	new_board := make([]int, len(current_node.board))
 	copy(new_board, current_node.board)
 
@@ -42,25 +42,25 @@ func Move(open_set *PriorityQueue, closed_set [][]int, current_node Node, direct
 			if current_node.zindex - NCOL >= 0 {
 				new_board[current_node.zindex] = new_board[current_node.zindex - NCOL]
 				new_board[current_node.zindex - NCOL] = 0
-				NewNode(open_set, closed_set, current_node, new_board, current_node.zindex - NCOL, direction)
+				NewNode(open_set, closed_set, current_node, new_board, current_node.zindex - NCOL, direction, size)
 			}
 		case DOWN:
 			if current_node.zindex + NCOL < NSIZE {
 				new_board[current_node.zindex] = new_board[current_node.zindex + NCOL]
 				new_board[current_node.zindex + NCOL] = 0
-				NewNode(open_set, closed_set, current_node, new_board, current_node.zindex + NCOL, direction)
+				NewNode(open_set, closed_set, current_node, new_board, current_node.zindex + NCOL, direction, size)
 			}
 		case LEFT:
 			if current_node.zindex % NCOL >= 1 {
 				new_board[current_node.zindex] = new_board[current_node.zindex - 1]
 				new_board[current_node.zindex - 1] = 0
-				NewNode(open_set, closed_set, current_node, new_board, current_node.zindex - 1, direction)
+				NewNode(open_set, closed_set, current_node, new_board, current_node.zindex - 1, direction, size)
 			}
 		case RIGHT:
 			if current_node.zindex % NCOL <= 1 {
 				new_board[current_node.zindex] = new_board[current_node.zindex + 1]
 				new_board[current_node.zindex + 1] = 0
-				NewNode(open_set, closed_set, current_node, new_board, current_node.zindex + 1, direction)
+				NewNode(open_set, closed_set, current_node, new_board, current_node.zindex + 1, direction, size)
 			}
 		default:
 			fmt.Print("--")
@@ -73,7 +73,7 @@ func GenerateHistory(node Node) {
 
 	tmp := node
 	for {
-		PrintBoard(tmp.board, Size{9, 3})
+		//PrintBoard(tmp.board, Size{9, 3})
 		nodes = append(nodes, tmp)
 		if (tmp.parent == nil) {
 			break
@@ -103,19 +103,26 @@ func GenerateHistory(node Node) {
 }
 
 func main() {
+	var common		Common
+
 	open_set 		:= make(PriorityQueue, 0)
 	goal			:= []int{1, 2, 3, 8, 0, 4, 7, 6, 5}
 
 	var base 		[]int
 	var node 		Node
-	var size 		Size
+	//var size 		Size
 	var closed_set 	[][]int
 
 	//var complexity_in_time int
 	var complexity_in_size float64
 
-	size.nsize 		= 9
-	size.ncol 		= 3
+	common.open_set = make(PriorityQueue, 0)
+	common.goal		= []int{1, 2, 3, 8, 0, 4, 7, 6, 5}
+	common.size		= 0
+
+
+	//size.nsize 		= 9
+	//size.ncol 		= 3
 
 	reader 				:= bufio.NewReader(os.Stdin)
 	content, _ 			:= reader.ReadString(0)
@@ -124,7 +131,8 @@ func main() {
 
 
 	if content_splitted[0][0] == '#' { 
-		size.ncol, _ = strconv.Atoi(content_splitted[1])
+		//size.ncol, _ = strconv.Atoi(content_splitted[1])
+		common.size, _ = strconv.Atoi(content_splitted[1])
 		for i := 2; i <= 4; i++ {
 			split_values := strings.Split(content_splitted[i], " ")
 			for _, n := range split_values {
@@ -135,20 +143,7 @@ func main() {
 	}
 
 
-	patate		:= []int{4, 2, 5, 1, 0, 6, 3, 8, 7}
-
-
-
-
-	PrintBoard(goal, size)
-
-	PrintBoard(patate, size)
-
-	fmt.Println("Conflicts : ", LinearConflict(patate, goal))
-	//return 
-
-
-	PrintBoard(base, size)
+	PrintBoard(base, common.size)
 	time_start := time.Now()
 	
 	node = Node{
@@ -183,10 +178,10 @@ func main() {
 			//GenerateHistory(node)
 			break 
 		}
-		Move(&open_set, closed_set, node, UP)
-		Move(&open_set, closed_set, node, DOWN)
-		Move(&open_set, closed_set, node, LEFT)
-		Move(&open_set, closed_set, node, RIGHT)
+		Move(&open_set, closed_set, node, common.size, UP)
+		Move(&open_set, closed_set, node, common.size, DOWN)
+		Move(&open_set, closed_set, node, common.size, LEFT)
+		Move(&open_set, closed_set, node, common.size, RIGHT)
 		max_iterations++
 	}
 	time_elapsed := time.Since(time_start)

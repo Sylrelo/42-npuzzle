@@ -1,10 +1,5 @@
 package main
 
-import (
-	_ "container/heap"
-	_ "container/list"
-)
-
 const (
 	NONE  = iota
 	UP    = iota
@@ -37,6 +32,13 @@ type Node struct {
 	distance     int
 	parent_count int
 	zindex       int
+}
+
+type Common struct {
+	closed_set 	[][]int
+	open_set	PriorityQueue
+	goal		[]int
+	size		int
 }
 
 type Size struct {

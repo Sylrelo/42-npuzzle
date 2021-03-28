@@ -28,14 +28,14 @@ func HammingDistance(board []int, goal []int) int {
 ** [s] [ ] [ ] [ ] [ ]
 */
 
-func ManhattanDistance(board []int, goal []int) int {
+func ManhattanDistance(board []int, goal []int, size int) int {
 	var total float64
 
 	total = 0
 	for i := range board {
 		if board[i] != 0 {
 			pos := FindIndex(goal, board[i])
-			total += math.Abs(float64(i % NCOL - pos % NCOL)) + math.Abs(float64(i / NCOL - pos / NCOL))
+			total += math.Abs(float64(i % size - pos % size)) + math.Abs(float64(i / size - pos / size))
 		}
 	}
 	return int(total)
@@ -50,16 +50,16 @@ func ManhattanDistance(board []int, goal []int) int {
 ** [s] [ ] [ ] [ ] [ ]
 */
 
-func EuclideanDistance(board []int, goal []int) int {
+func EuclideanDistance(board []int, goal []int, size int) int {
 	var total float64
 
 	for i := range board {
 		if board[i] != 0 {
 			pos := FindIndex(goal, board[i])
-			cx := (i % NCOL)
-			gx := (pos % NCOL)
-			cy := (i / NCOL)
-			gy := (pos / NCOL)
+			cx := (i % size)
+			gx := (pos % size)
+			cy := (i / size)
+			gy := (pos / size)
 			total += math.Sqrt(float64(((cx - gx) * (cx - gx)) + ((cy - gy) * (cy - gy))))
 		}
 	}
@@ -70,8 +70,7 @@ func EuclideanDistance(board []int, goal []int) int {
 **
 */
 
-
-func LinearConflict(board []int, goal []int) int {
+func LinearConflict(board []int, goal []int, size int) int {
 	var linear 		LinearConflictHelper
 
 	conflicts 		:= 0
@@ -81,11 +80,11 @@ func LinearConflict(board []int, goal []int) int {
 
 	for i := 0; i < glen; i++ {
 			gi 	:= FindIndex(goal, i)
-			gix := gi % NCOL
-			giy := gi / NCOL
+			gix := gi % size
+			giy := gi / size
 			bi 	:= FindIndex(board, i)
-			bix := bi % NCOL
-			biy := bi / NCOL
+			bix := bi % size
+			biy := bi / size
 			linear.board = append(linear.board, vec2i{bix, biy})
 			linear.goal = append(linear.goal, vec2i{gix, giy})
 	}
