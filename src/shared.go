@@ -12,6 +12,7 @@ const (
 	LEFT  = iota
 	RIGHT = iota
 )
+
 const (
 	NSIZE = 9
 	NCOL  = 3
