@@ -40,3 +40,44 @@ func PrintBoard(board []int, size Size) {
 	}
 	fmt.Println("\n ")
 }
+
+func GenerateSnail(col int, row int) []int {
+	result 		:= make([]int, col * row)
+	//direction 	:= RIGHT
+	irow		:= 0
+	crow		:= 0
+	dir			:= 1
+	//icol		:= 0
+	//istart		:= 0
+
+	for i := col * row - 1; i >= 0; i-- {
+
+		irow = 0
+		for irow < (col * row) {
+
+			crow += dir
+			irow++
+
+			dir *= -1
+		}
+		// result[i - 1] = 0
+		// if direction == RIGHT && icol < col {
+		// 	result[i - 1] = i
+		// 	icol++
+		// }
+		// if icol == 3 && direction == RIGHT {
+		// 	direction = DOWN
+		// 	irow = 0
+		// 	istart = row + icol
+		// }
+		// if direction == DOWN && irow <= 1 {
+		// 	result[istart + (3 * irow) - 1] = 9
+		// 	irow++
+		// }
+		// _ = istart
+		
+	}
+
+	_ = irow
+	return result
+}

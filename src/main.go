@@ -9,16 +9,12 @@ import (
 func NewNode(open_set *PriorityQueue, closed_set [][]int, current_node Node, new_board []int, zindex int, direction int) {
 	goal := []int{1, 2, 3, 8, 0, 4, 7, 6, 5}
 
-	//PrintBoard(current_node.board, Size{9, 3})
-	//PrintBoard(new_board, Size{9, 3})
-
 	if Same(closed_set, new_board) {
 		fmt.Println("\033[33m~ Board already explored. Skipping.\033[0m")
 		return
 	}
 
 	priority := current_node.parent_count + ManhattanDistance(new_board, goal)
-
 	new_node := Node{
 		board:        new_board,
 		move:         direction,
@@ -67,16 +63,22 @@ func Move(open_set *PriorityQueue, closed_set [][]int, current_node Node, direct
 }
 
 func main() {
-	base := []int{1, 8, 2, 0, 4, 3, 7, 6, 5}
+	base 			:= []int{1, 8, 2, 0, 4, 3, 7, 6, 5}
+	open_set 		:= make(PriorityQueue, 0)
 
-	var node Node
-	var size Size
-	open_set := make(PriorityQueue, 0)
-	var closed_set [][]int
+	var node 		Node
+	var size 		Size
+	var closed_set 	[][]int
 
-	size.nsize = 9
-	size.ncol = 3
+	size.nsize 		= 9
+	size.ncol 		= 3
 
+
+	snail := GenerateSnail(3, 3)
+
+	PrintBoard(snail, size)
+
+	return 
 	node = Node{
 		board:        base,
 		move:         NONE,
