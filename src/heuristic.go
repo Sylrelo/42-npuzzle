@@ -14,7 +14,7 @@ func HammingDistance(board [9]int, goal [9]int) int {
 	return total
 }
 
-func ManhattanDistance(board [9]int, goal [9]int) float64  {
+func ManhattanDistance(board [9]int, goal [9]int) int  {
 	var total float64
 
 	total = 0
@@ -24,7 +24,7 @@ func ManhattanDistance(board [9]int, goal [9]int) float64  {
 			total += math.Abs(float64(i % NSIZE - pos % NSIZE)) + math.Abs(float64(i / NSIZE - pos / NSIZE))
 		}
 	}
-	return total
+	return (total)
 }
 
 func EuclideanDistance() {
