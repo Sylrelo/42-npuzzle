@@ -18,6 +18,17 @@ const (
 	NCOL  = 3
 )
 
+/*
+** Linear Conflict Heuristic optimisation structures
+*/
+type vec2i struct {
+	x			int
+	y			int
+}
+type LinearConflictHelper struct {
+	board		[]vec2i
+	goal		[]vec2i
+}
 type Node struct {
 	parent       *Node
 	board        []int
@@ -32,3 +43,5 @@ type Size struct {
 	nsize int
 	ncol  int
 }
+
+

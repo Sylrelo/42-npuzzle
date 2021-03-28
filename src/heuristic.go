@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "fmt"
 	"math"
 )
 
@@ -68,57 +69,40 @@ func EuclideanDistance(board []int, goal []int) int {
 /*
 **
 */
+
+
 func LinearConflict(board []int, goal []int) int {
-	var conflicts int
-	glen := len(goal)
+	var linear 		LinearConflictHelper
 
-	conflicts = 0
+	conflicts 		:= 0
+	glen 			:= len(goal)
+	linear.board 	= make([]vec2i, 0)
+	linear.goal 	= make([]vec2i, 0)
 
-	for i := 1; i < glen; i++ {
-		for j := i + 1; j < glen; j++ {
-			gx := FindIndex(goal, i) % NCOL
-			gy := FindIndex(goal, j) / NCOL
-			cx := FindIndex(board, i) % NCOL
-			cy := FindIndex(board, j) / NCOL
-
-			_ = gx
-			_ = cx
-			_ = gy
-			_ = cy
-		}
-
-		//pg := FindIndex(goal, i)
-		//gx := pg % NCOL
-		//gy := pg / NCOL
-//
-		//pb := FindIndex(board, i)
-		//cx := pb % NCOL
-		//cy := pb / NCOL
-
-		//fmt.Println("[", i, "]", cx, cy, " - ", gx, gy)
-
-		//if cy == gy  {
-			//if (cx - gx == 1) {
-				//fmt.Println("CONFLIT 3")
-				//conflicts++
-			//}
-			//if (cx - gx == -1) {
-				//fmt.Println("CONFLIT 4")
-				//conflicts++
-			//}
-		//}
-
-		//if cx == gx {
-			//if (cy - gy == 1) {
-				//fmt.Println("CONFLIT 1")
-				//conflicts++
-			//}
-			//if (cy - gy == -1) {
-				//fmt.Println("CONFLIT 2")	
-				//conflicts++
-			//}
-		//}
+	for i := 0; i < glen; i++ {
+			gi 	:= FindIndex(goal, i)
+			gix := gi % NCOL
+			giy := gi / NCOL
+			bi 	:= FindIndex(board, i)
+			bix := bi % NCOL
+			biy := bi / NCOL
+			linear.board = append(linear.board, vec2i{bix, biy})
+			linear.goal = append(linear.goal, vec2i{gix, giy})
 	}
 
+	for i := 1; i < glen; i++ {
+		gi := linear.goal[i]
+		bi := linear.board[i]
+		for j := i + 1; j < glen; j++ {
+			gj := linear.goal[j]
+			bj := linear.board[j]
+			if bi.x == bj.x && gi.x == gj.x && ((bi.y > bj.y && gi.y < gj.y) || (bi.y < bj.y && gi.y > gj.y)) {
+				conflicts++
+			}
+			if bi.y == bj.y && gi.y == gj.y && ((bi.x > bj.x && gi.x < gj.x) || (bi.x < bj.x && gi.x > gj.x)) {
+				conflicts++
+			}
+		}
+	}
 	return conflicts
 }
