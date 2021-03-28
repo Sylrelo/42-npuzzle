@@ -41,9 +41,4 @@ type Common struct {
 	size		int
 }
 
-type Size struct {
-	nsize int
-	ncol  int
-}
-
 

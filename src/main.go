@@ -108,6 +108,11 @@ func main() {
 
 	common.open_set = make(PriorityQueue, 0)
 	common.goal		= []int{1, 2, 3, 8, 0, 4, 7, 6, 5}
+	// common.goal		= []int{
+	// 	1, 2, 3, 4, 
+	// 	12, 13, 14, 5, 
+	// 	11, 0, 15, 6, 
+	// 	10, 9, 8, 7}
 	common.size		= 0
 
 	reader 				:= bufio.NewReader(os.Stdin)
@@ -116,16 +121,24 @@ func main() {
 
 	if content_splitted[0][0] == '#' { 
 		common.size, _ = strconv.Atoi(content_splitted[1])
-		for i := 2; i <= 4; i++ {
+
+		for i := 2; i < 2 + common.size; i++ {
+
 			split_values := strings.Split(content_splitted[i], " ")
 			for _, n := range split_values {
-				atoi, _ := strconv.Atoi(n)
-				base = append(base, atoi)
+				tmp := strings.TrimSpace(n)
+				if len(tmp) > 0 {
+			 		atoi, _ := strconv.Atoi(tmp)
+			 		base = append(base, atoi)
+				}
 			}
 		}
 	}
 
+	fmt.Println(base)
+
 	PrintBoard(base, common.size)
+
 	time_start := time.Now()
 	
 	node = Node{
@@ -140,16 +153,16 @@ func main() {
 	heap.Push(&common.open_set, &Item{node: node, priority: 0})
 
 	max_iterations := 0
-	for max_iterations < 35000 {
+	for max_iterations < 375000 {
 
 		if common.open_set.Len() == 0 {
 			fmt.Println("\033[1;31mEmpty queue, break.\033[0m")
 			break
 		}
 		//fmt.Println("\033[1;34m- Queue pop.\033[0m")
-		complexity_in_size = math.Max(float64(complexity_in_size), float64(common.open_set.Len()))
+		complexity_in_size 	= math.Max(float64(complexity_in_size), float64(common.open_set.Len()))
 
-		node 		:= heap.Pop(&common.open_set).(*Item).node
+		node 				:= heap.Pop(&common.open_set).(*Item).node
 		common.closed_set 	= append(common.closed_set, node.board)
 
 		if Compare(node.board, common.goal) {
@@ -167,6 +180,9 @@ func main() {
 		max_iterations++
 	}
 	time_elapsed := time.Since(time_start)
+
+	fmt.Println(len(common.closed_set), " complexity in time (closed)")
+	fmt.Println(complexity_in_size, " complexity in size (max open)")
 
 	fmt.Printf("Time taken %s \n", time_elapsed)
 }

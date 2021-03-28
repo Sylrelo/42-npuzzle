@@ -43,17 +43,20 @@ func Compare(a []int, b []int) bool {
 }
 
 func PrintBoard(board []int, size int) {
-	for i := 0; i < size; i++ {
-		fmt.Print(board[0+i], " ")
+	for j := 0; j < size; j++ {
+		for i := 0; i < size; i++ {
+			fmt.Print(board[size * j + i], " ")
+		}
+		fmt.Println("")
 	}
-	fmt.Println("")
-	for i := 0; i < size; i++ {
-		fmt.Print(board[(size)+i], " ")
-	}
-	fmt.Println("")
-	for i := 0; i < size; i++ {
-		fmt.Print(board[(size*2)+i], " ")
-	}
+	
+	// for i := 0; i < size; i++ {
+	// 	fmt.Print(board[(size)+i], " ")
+	// }
+	// fmt.Println("")
+	// for i := 0; i < size; i++ {
+	// 	fmt.Print(board[(size*2)+i], " ")
+	// }
 	fmt.Println("\n ")
 }
 
