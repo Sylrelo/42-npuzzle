@@ -1,32 +1,32 @@
 package main
 
 import (
-	"container/list"
-	_"container/heap"
+	_ "container/heap"
+	_ "container/list"
 )
 
 const (
-	NONE	= iota
-	UP 		= iota
-	DOWN 	= iota
-	LEFT 	= iota
-	RIGHT 	= iota
+	NONE  = iota
+	UP    = iota
+	DOWN  = iota
+	LEFT  = iota
+	RIGHT = iota
 )
 const (
 	NSIZE = 9
-	NCOL 	= 3
+	NCOL  = 3
 )
 
 type Node struct {
-	parent		*Node
-	board		[9]int
-	move		int
-	cost		int
-	distance	int
+	parent       *Node
+	board        []int
+	move         int
+	cost         int
+	distance     int
+	parent_count int
 }
 
-type Solver struct {
-	open		*list.List
-	closed		*list.List
-	ncol		int
+type Size struct {
+	nsize int
+	ncol  int
 }

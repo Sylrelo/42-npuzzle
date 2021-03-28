@@ -2,10 +2,9 @@ package main
 
 import "math"
 
-func HammingDistance(board [9]int, goal [9]int) int {
-	var total int
+func HammingDistance(board []int, goal []int) int {
+	var total int = 0
 
-	total = 0
 	for i := range board {
 		if board[i] != 0 && board[i] != goal[i] {
 			total++
@@ -14,17 +13,17 @@ func HammingDistance(board [9]int, goal [9]int) int {
 	return total
 }
 
-func ManhattanDistance(board [9]int, goal [9]int) int  {
+func ManhattanDistance(board []int, goal []int) int {
 	var total float64
 
 	total = 0
 	for i := range board {
-		if (board[i] != 0) {
+		if board[i] != 0 {
 			pos := FindIndex(goal, board[i])
-			total += math.Abs(float64(i % NSIZE - pos % NSIZE)) + math.Abs(float64(i / NSIZE - pos / NSIZE))
+			total += math.Abs(float64(i%NSIZE-pos%NSIZE)) + math.Abs(float64(i/NSIZE-pos/NSIZE))
 		}
 	}
-	return (total)
+	return int(total)
 }
 
 func EuclideanDistance() {

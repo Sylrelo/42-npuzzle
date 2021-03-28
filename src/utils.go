@@ -2,35 +2,35 @@ package main
 
 import "fmt"
 
-func FindIndex(haystack [9]int, needle int) int {
+func FindIndex(haystack []int, needle int) int {
 	for i, n := range haystack {
-		if (needle == n) {
+		if needle == n {
 			return i
 		}
 	}
 	return -1
 }
 
-func Same(a [9]int, b [9]int) bool {
+func Same(a []int, b []int) bool {
 	for i, n := range a {
-		if (b[i] != n) {
+		if b[i] != n {
 			return false
 		}
 	}
 	return true
 }
 
-func PrintBoard(board [9]int) {
-	for i := 0; i < 3; i++ {
-		fmt.Print(board[0 + i], " ")
+func PrintBoard(board []int, size Size) {
+	for i := 0; i < size.ncol; i++ {
+		fmt.Print(board[0+i], " ")
 	}
 	fmt.Println("")
-	for i := 0; i < 3; i++ {
-		fmt.Print(board[3 + i], " ")
+	for i := 0; i < size.ncol; i++ {
+		fmt.Print(board[(size.ncol)+i], " ")
 	}
 	fmt.Println("")
-	for i := 0; i < 3; i++ {
-		fmt.Print(board[6 + i], " ")
+	for i := 0; i < size.ncol; i++ {
+		fmt.Print(board[(size.ncol*2)+i], " ")
 	}
-	fmt.Println("")
+	fmt.Println("\n ")
 }
