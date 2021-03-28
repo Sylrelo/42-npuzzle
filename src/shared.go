@@ -24,6 +24,8 @@ type Node struct {
 	cost         int
 	distance     int
 	parent_count int
+	priority     int
+	index        int
 }
 
 type Size struct {

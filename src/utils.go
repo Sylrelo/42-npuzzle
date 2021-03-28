@@ -11,13 +11,19 @@ func FindIndex(haystack []int, needle int) int {
 	return -1
 }
 
-func Same(a []int, b []int) bool {
-	for i, n := range a {
-		if b[i] != n {
-			return false
+func Same(a [][]int, b []int) bool {
+	for _, set := range a {
+		count := 0
+		for i, n := range set {
+			if b[i] == n {
+				count++
+			}
+		}
+		if count == 9 {
+			return true
 		}
 	}
-	return true
+	return false
 }
 
 func PrintBoard(board []int, size Size) {
