@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func NewNode(open_set *PriorityQueue, closed_set [][]int, current_node Node, new_board []int, direction int) {
+func NewNode(open_set *PriorityQueue, closed_set [][]int, current_node Node, new_board []int, zindex int, direction int) {
 	goal := []int{1, 2, 3, 8, 0, 4, 7, 6, 5}
 
 	//PrintBoard(current_node.board, Size{9, 3})
@@ -25,46 +25,45 @@ func NewNode(open_set *PriorityQueue, closed_set [][]int, current_node Node, new
 		cost:         priority,
 		parent_count: current_node.parent_count + 1,
 		distance:     priority,
-		parent:       &current_node}
+		parent:       &current_node,
+		zindex:       zindex}
 
 	heap.Push(open_set, &Item{node: new_node, priority: priority})
 	fmt.Println("\033[1;36m+ Queue push\033[0m")
 }
 
 func Move(open_set *PriorityQueue, closed_set [][]int, current_node Node, direction int) {
-	zindex := FindIndex(current_node.board, 0)
 	new_board := make([]int, len(current_node.board))
 	copy(new_board, current_node.board)
 
 	switch direction {
 	case UP:
-		if zindex-NCOL >= 0 {
-			new_board[zindex] = new_board[zindex-NCOL]
-			new_board[zindex-NCOL] = 0
-			NewNode(open_set, closed_set, current_node, new_board, direction)
+		if current_node.zindex - NCOL >= 0 {
+			new_board[current_node.zindex] = new_board[current_node.zindex - NCOL]
+			new_board[current_node.zindex - NCOL] = 0
+			NewNode(open_set, closed_set, current_node, new_board, current_node.zindex - NCOL, direction)
 		}
 	case DOWN:
-		if zindex+NCOL < NSIZE {
-			new_board[zindex] = new_board[zindex+NCOL]
-			new_board[zindex+NCOL] = 0
-			NewNode(open_set, closed_set, current_node, new_board, direction)
+		if current_node.zindex + NCOL < NSIZE {
+			new_board[current_node.zindex] = new_board[current_node.zindex + NCOL]
+			new_board[current_node.zindex + NCOL] = 0
+			NewNode(open_set, closed_set, current_node, new_board, current_node.zindex + NCOL, direction)
 		}
 	case LEFT:
-		if zindex%NCOL >= 1 {
-			new_board[zindex] = new_board[zindex-1]
-			new_board[zindex-1] = 0
-			NewNode(open_set, closed_set, current_node, new_board, direction)
+		if current_node.zindex % NCOL >= 1 {
+			new_board[current_node.zindex] = new_board[current_node.zindex - 1]
+			new_board[current_node.zindex - 1] = 0
+			NewNode(open_set, closed_set, current_node, new_board, current_node.zindex - 1, direction)
 		}
 	case RIGHT:
-		if zindex%NCOL <= 1 {
-			new_board[zindex] = new_board[zindex+1]
-			new_board[zindex+1] = 0
-			NewNode(open_set, closed_set, current_node, new_board, direction)
+		if current_node.zindex % NCOL <= 1 {
+			new_board[current_node.zindex] = new_board[current_node.zindex + 1]
+			new_board[current_node.zindex + 1] = 0
+			NewNode(open_set, closed_set, current_node, new_board, current_node.zindex + 1, direction)
 		}
 	default:
 		fmt.Print("--")
 	}
-	//return false, board
 }
 
 func main() {
@@ -84,7 +83,8 @@ func main() {
 		cost:         0,
 		parent_count: 0,
 		distance:     0,
-		parent:       nil}
+		parent:       nil,
+		zindex:       FindIndex(base, 0)}
 
 	heap.Push(&open_set, &Item{node: node, priority: 0})
 
