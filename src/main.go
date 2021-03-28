@@ -19,7 +19,7 @@ func NewNode(open_set *PriorityQueue, closed_set [][]int, current_node Node, new
 		return
 	}
 
-	priority := current_node.parent_count + ManhattanDistance(new_board, goal)
+	priority := current_node.parent_count + ManhattanDistance(new_board, goal) + (2 * LinearConflict(new_board, goal))
 	new_node := Node{
 		board:        new_board,
 		move:         direction,
@@ -117,16 +117,15 @@ func main() {
 	size.nsize 		= 9
 	size.ncol 		= 3
 
-	reader 		:= bufio.NewReader(os.Stdin)
-	content, _ 	:= reader.ReadString(0)
-	content_splitted := strings.Split(content, "\n")
+	reader 				:= bufio.NewReader(os.Stdin)
+	content, _ 			:= reader.ReadString(0)
+	content_splitted 	:= strings.Split(content, "\n")
+
 
 
 	if content_splitted[0][0] == '#' { 
 		size.ncol, _ = strconv.Atoi(content_splitted[1])
-
 		for i := 2; i <= 4; i++ {
-
 			split_values := strings.Split(content_splitted[i], " ")
 			for _, n := range split_values {
 				atoi, _ := strconv.Atoi(n)
@@ -134,6 +133,20 @@ func main() {
 			}
 		}
 	}
+
+
+	patate		:= []int{4, 2, 5, 1, 0, 6, 3, 8, 7}
+
+
+
+
+	PrintBoard(goal, size)
+
+	PrintBoard(patate, size)
+
+	fmt.Println("Conflicts : ", LinearConflict(patate, goal))
+	return 
+
 
 	PrintBoard(base, size)
 	time_start := time.Now()

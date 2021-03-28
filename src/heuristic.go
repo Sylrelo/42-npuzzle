@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -65,6 +66,46 @@ func EuclideanDistance(board []int, goal []int) int {
 	return int(total)
 }
 
-func LinearConflict() {
-	//
+/*
+**
+*/
+func LinearConflict(board []int, goal []int) int {
+	var conflicts int
+	glen := len(goal)
+
+	conflicts = 0
+
+	for i := 1; i < glen; i++ {
+		pb := FindIndex(board, i)
+		pg := FindIndex(goal, i)
+
+		gx := pg % NCOL
+		gy := pg / NCOL
+		cx := pb % NCOL
+		cy := pb / NCOL
+
+		fmt.Println("[", i, "]", cx, cy, " - ", gx, gy)
+		if cx == gx {
+			if (cy > gy) {
+				fmt.Println("CONFLIT 1")
+				conflicts++
+			}
+			if (cy < gy) {
+				fmt.Println("CONFLIT 2")	
+				conflicts++
+			}
+		}
+		if cy == gy  {
+			if (cx > gx) {
+				//fmt.Println("CONFLIT 3")
+				conflicts++
+			}
+			if (cx < gx) {
+				//fmt.Println("CONFLIT 4")
+				conflicts++
+			}
+		}
+	}
+
+	return conflicts
 }
