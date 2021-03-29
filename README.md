@@ -15,6 +15,7 @@ The goal of this project is to solve the N-puzzle ("taquin" in French) game usin
 	- The ordered sequence of states that make up the solution
 - If the puzzle is unsolvable, the user must be informed and the program must exit properly
 
+
 ### Usage
 ```bash
 go run ./src -f [FILE]
