@@ -1,153 +1,157 @@
 package main
 
 import (
+	"container/heap"
 	"fmt"
-	"container/list"
-	_"container/heap"
+	"math"
+	"time"
 )
 
-const (
-	UP 		= iota
-	DOWN 	= iota
-	LEFT 	= iota
-	RIGHT 	= iota
-)
-const NSIZE = 9
-const NCOL 	= 3
-
-func FindIndex(haystack [9]int, needle int) int {
-	for i, n := range haystack {
-		if (needle == n) {
-			return i
-		}
+func NewNode(common *Common, current_node Node, new_board []int, zindex int, direction int) {
+	if Same(common.closed_set, new_board) {
+		//fmt.Println("\033[33m~ Board already explored. Skipping.\033[0m")
+		return
 	}
-	return -1
+
+	priority := current_node.parent_count + ManhattanDistance(new_board, common.goal, common.size) + (2 * LinearConflict(new_board, common.goal, common.size))
+	new_node := Node{
+		board:        new_board,
+		move:         direction,
+		cost:         priority,
+		parent_count: current_node.parent_count + 1,
+		distance:     priority,
+		parent:       &current_node,
+		zindex:       zindex}
+
+	heap.Push(&common.open_set, &Item{node: new_node, priority: priority})
+	//fmt.Println("\033[1;36m+ Queue push\033[0m")
 }
 
-func Same(a [9]int, b [9]int) bool {
-	for i, n := range a {
-		if (b[i] != n) {
-			return false
-		}
-	}
-	return true
-}
-
-type Node struct {
-	parent		*Node
-	board		[9]int
-	move		int
-	cost		int
-	distance	int
-}
-
-type Solver struct {
-	open		*list.List
-	closed		*list.List
-	ncol		int
-}
-
-func PrintBoard(board [9]int) {
-	for i := 0; i < 3; i++ {
-		fmt.Print(board[0 + i], " ")
-	}
-	fmt.Println("")
-	for i := 0; i < 3; i++ {
-		fmt.Print(board[3 + i], " ")
-	}
-	fmt.Println("")
-	for i := 0; i < 3; i++ {
-		fmt.Print(board[6 + i], " ")
-	}
-	fmt.Println("")
-}
-
-func Move(board [9]int, direction int) (bool, [9]int) {
-	zindex := FindIndex(board, 0)
+func Move(common *Common, current_node Node, direction int) {
+	new_board := make([]int, len(current_node.board))
+	copy(new_board, current_node.board)
 
 	switch direction {
 		case UP:
-			if (zindex - NCOL >= 0) {
-				board[zindex] = board[zindex - NCOL]
-				board[zindex - NCOL] = 0
-				return true, board
+			if current_node.zindex - common.size >= 0 {
+				new_board[current_node.zindex] = new_board[current_node.zindex - common.size]
+				new_board[current_node.zindex - common.size] = 0
+				NewNode(common, current_node, new_board, current_node.zindex - common.size, direction)
 			}
 		case DOWN:
-			if (zindex + NCOL < NSIZE) {
-				board[zindex] = board[zindex + NCOL]
-				board[zindex + NCOL] = 0
-				return true, board
+			if current_node.zindex + common.size < NSIZE {
+				new_board[current_node.zindex] = new_board[current_node.zindex + common.size]
+				new_board[current_node.zindex + common.size] = 0
+				NewNode(common, current_node, new_board, current_node.zindex + common.size, direction)
 			}
 		case LEFT:
-			if (zindex % NCOL >= 1) {
-				board[zindex] = board[zindex - 1]
-				board[zindex - 1] = 0
-				return true, board
+			if current_node.zindex % common.size >= 1 {
+				new_board[current_node.zindex] = new_board[current_node.zindex - 1]
+				new_board[current_node.zindex - 1] = 0
+				NewNode(common, current_node, new_board, current_node.zindex - 1, direction)
 			}
 		case RIGHT:
-			if (zindex % NCOL <= 1) {
-				board[zindex] = board[zindex + 1]
-				board[zindex + 1] = 0
-				return true, board
+			if current_node.zindex % common.size <= 1 {
+				new_board[current_node.zindex] = new_board[current_node.zindex + 1]
+				new_board[current_node.zindex + 1] = 0
+				NewNode(common, current_node, new_board, current_node.zindex + 1, direction)
 			}
 		default:
 			fmt.Print("--")
 	}
-	return false, board
+}
+
+func GenerateHistory(node Node) {
+	var nodes			[]Node
+	var reversed_nodes	[]Node
+
+	tmp := node
+	for {
+		//PrintBoard(tmp.board, Size{9, 3})
+		nodes = append(nodes, tmp)
+		if (tmp.parent == nil) {
+			break
+		}
+		tmp = *tmp.parent
+	}
+	for i := range nodes {
+		n := nodes[len(nodes) - 1 - i]
+		reversed_nodes = append(reversed_nodes, n)
+	}
+	for _, n := range reversed_nodes {
+		switch n.move {
+			case NONE:
+				fmt.Print("INITIAL")
+			case UP:
+				fmt.Print("UP")
+			case DOWN:
+				fmt.Print("DOWN")
+			case LEFT:
+				fmt.Print("LEFT")
+			case RIGHT:
+				fmt.Print("RIGHT")
+		}
+		fmt.Print(" > ")
+	}
+	fmt.Print("\n")
 }
 
 func main() {
-	base := [9]int {1, 8, 2, 0, 4, 3, 7, 6, 5}
-	var solver Solver
-	//base := [3][3] int {{1,2,3}, {4,5,6}, {7,8,9}}
+	var common				Common
+	var base 				[]int
+	var node 				Node
+	var complexity_in_size	float64
 
-	solver.open 	= list.New()
-	solver.closed 	= list.New()
+	common.open_set 		= make(PriorityQueue, 0)
+	common.size, base 		= Parse()
+	common.goal				= GenerateSnail(common.size)
 
-	var node Node
+	PrintBoard(base, common.size)
 
+	time_start := time.Now()
+	
 	node = Node{
-		board: base,
-		move: 5,
-		cost: 0,
-		distance: 0}
+		board:        base,
+		move:         NONE,
+		cost:         0,
+		parent_count: 0,
+		distance:     0,
+		parent:       nil,
+		zindex:       FindIndex(base, 0)}
 
-	_ = node
+	heap.Push(&common.open_set, &Item{node: node, priority: 0})
 
-	solver.open.PushBack(base)
+	max_iterations := 0
+	for {
 
-	fmt.Println(solver.open)
-	for e := solver.open.Front(); e != nil; e = e.Next() {
-        fmt.Println(e.Value)
-    }
+		if common.open_set.Len() == 0 {
+			fmt.Println("\033[1;31mEmpty queue, break.\033[0m")
+			break
+		}
+		//fmt.Println("\033[1;34m- Queue pop.\033[0m")
+		complexity_in_size 	= math.Max(float64(complexity_in_size), float64(common.open_set.Len()))
 
-	for i := 0; i < 2; i++ {
-		var state, new_board = Move(base, RIGHT)
+		node 				:= heap.Pop(&common.open_set).(*Item).node
+		common.closed_set 	= append(common.closed_set, node.board)
 
-		_ = state
-		_ = new_board
+		if Compare(node.board, common.goal) {
+			fmt.Println("\033[1;34mSolution Found !\033[0m")
+			fmt.Println(node.parent.parent_count, " parents")
+			fmt.Println(len(common.closed_set), " complexity in time (closed)")
+			fmt.Println(complexity_in_size, " complexity in size (max open)")
+			//GenerateHistory(node)
+			break 
+		}
+		Move(&common, node, UP)
+		Move(&common, node, DOWN)
+		Move(&common, node, LEFT)
+		Move(&common, node, RIGHT)
+		max_iterations++
 	}
+	time_elapsed := time.Since(time_start)
 
+	fmt.Println(len(common.closed_set), " complexity in time (closed)")
+	fmt.Println(complexity_in_size, " complexity in size (max open)")
 
-	// base = [9]int {1, 8, 2, 0, 4, 3, 7, 6, 5}
-	// Move(base, RIGHT)
-	// base = [9]int {1, 8, 0, 2, 4, 3, 7, 6, 5}
-	// Move(base, RIGHT)
-	// base = [9]int {1, 0, 8, 2, 4, 3, 7, 6, 5}
-	// Move(base, RIGHT)
-	// base = [9]int {0, 1, 8, 2, 4, 3, 7, 6, 5}
-	// Move(base, RIGHT)
-	// base = [9]int {4, 1, 8, 2, 0, 3, 7, 6, 5}
-	// Move(base, RIGHT)
-	// base = [9]int {4, 1, 8, 2, 3, 0, 7, 6, 5}
-	// Move(base, RIGHT)
-	// base = [9]int {4, 1, 8, 2, 3, 7, 0, 6, 5}
-	// Move(base, RIGHT)
-	// base = [9]int {4, 1, 8, 2, 3, 7, 6, 0, 5}
-	// Move(base, RIGHT)
-	// base = [9]int {4, 1, 8, 2, 3, 7, 6, 5, 0}
-	// Move(base, RIGHT)
-
-	_ = base
-
+	fmt.Printf("Time taken %s \n", time_elapsed)
 }
