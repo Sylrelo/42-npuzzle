@@ -1,17 +1,17 @@
 package main
 
 const (
-	NONE  = iota
-	UP    = iota
-	DOWN  = iota
-	LEFT  = iota
-	RIGHT = iota
+	NONE  			= iota
+	UP    			= iota
+	DOWN  			= iota
+	LEFT  			= iota
+	RIGHT 			= iota
+	MANHATTAN		= iota
+	LINEAR_CONFLICT = iota
+	HAMMING			= iota
+	ASTAR			= iota
 )
 
-const (
-	NSIZE = 9
-	NCOL  = 3
-)
 
 /*
 ** Linear Conflict Heuristic optimisation structures
@@ -24,6 +24,15 @@ type LinearConflictHelper struct {
 	board		[]vec2i
 	goal		[]vec2i
 }
+/*
+**
+*/
+
+type HeuristicFct func(board []int, goal []int, size int) int
+
+/*
+**
+*/
 type Node struct {
 	parent       *Node
 	board        []int
@@ -34,9 +43,12 @@ type Node struct {
 	zindex       int
 }
 
-type Common struct {
+type Solver struct {
 	closed_set 	[][]int
 	open_set	PriorityQueue
+	heuristic	HeuristicFct
+}
+type Common struct {
 	goal		[]int
 	size		int
 }

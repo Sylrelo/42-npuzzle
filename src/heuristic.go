@@ -8,7 +8,7 @@ import (
 /*
 ** Number of missplaced tiles
  */
-func HammingDistance(board []int, goal []int) int {
+func HammingDistance(board []int, goal []int, size int) int {
 	var total int = 0
 
 	for i := range board {
@@ -16,6 +16,7 @@ func HammingDistance(board []int, goal []int) int {
 			total++
 		}
 	}
+	_ = size
 	return total
 }
 
@@ -103,5 +104,5 @@ func LinearConflict(board []int, goal []int, size int) int {
 			}
 		}
 	}
-	return conflicts
+	return 2 * conflicts + ManhattanDistance(board, goal, size)
 }
