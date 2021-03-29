@@ -110,21 +110,44 @@ func GetHeuristicName(heuristic int) string {
 	}
 }
 
+func Astar(common Common, solver *Solver, node Node) (bool, Node) {
+	for {
+		if solver.open_set.Len() == 0 {
+			fmt.Println("\033[1;31mEmpty queue, break.\033[0m")
+			break
+		}
+
+		solver.complexity_in_size 	= math.Max(float64(solver.complexity_in_size), float64(solver.open_set.Len()))
+		node 						:= heap.Pop(&solver.open_set).(*Item).node
+		solver.closed_set 			= append(solver.closed_set, node.board)
+
+		if Compare(node.board, common.goal) {
+			return true, node
+		}
+
+		Move(&common, solver, node, UP)
+		Move(&common, solver, node, DOWN)
+		Move(&common, solver, node, LEFT)
+		Move(&common, solver, node, RIGHT)
+	}
+	return false, Node{}
+}
+
 func Solve(wg *sync.WaitGroup, common Common, intial_board []int, algo int, heuristic int) {
 	defer wg.Done()
 
-	var complexity_in_size	float64
+	//var complexity_in_size	float64
 	var node 				Node
 	var	solver				Solver
 	var solution			bool
 	var solution_node		Node
 
-	solver.open_set 		= make(PriorityQueue, 0)
-	solver.closed_set 		= make([][]int, 0)
-	complexity_in_size		= 0
-	solution				= false
+	solver.open_set 			= make(PriorityQueue, 0)
+	solver.closed_set 			= make([][]int, 0)
+	solver.complexity_in_size	= 0
 
-	time_start 				:= time.Now()
+	solution					= false
+
 
 	switch heuristic {
 		case MANHATTAN:
@@ -149,38 +172,25 @@ func Solve(wg *sync.WaitGroup, common Common, intial_board []int, algo int, heur
 
 	heap.Push(&solver.open_set, &Item{node: node, priority: 0})
 
-	for {
-		if solver.open_set.Len() == 0 {
-			fmt.Println("\033[1;31mEmpty queue, break.\033[0m")
-			break
-		}
+	time_start 				:= time.Now()
 
-		complexity_in_size 	= math.Max(float64(complexity_in_size), float64(solver.open_set.Len()))
-		node 				:= heap.Pop(&solver.open_set).(*Item).node
-		solver.closed_set 	= append(solver.closed_set, node.board)
-
-		if Compare(node.board, common.goal) {
-			solution 		= true
-			solution_node 	= node
-			break 
-		}
-
-		Move(&common, &solver, node, UP)
-		Move(&common, &solver, node, DOWN)
-		Move(&common, &solver, node, LEFT)
-		Move(&common, &solver, node, RIGHT)
+	switch algo {
+		case ASTAR:
+			solution, solution_node = Astar(common, &solver, node)
+		default:
+			solution, solution_node = false, Node{}
+			return
 	}
-
+	
 	if solution {
 		time_elapsed := time.Since(time_start)
 		fmt.Printf("\033[1;32m%s\033[0m\n", GetHeuristicName(heuristic))
 		fmt.Printf("> %-18s : %6d\n", "Parents", solution_node.parent.parent_count)
 		fmt.Printf("> %-18s : %6d\n", "Complexity in time", len(solver.closed_set))
-		fmt.Printf("> %-18s : %6d\n", "Complexity in size", int(complexity_in_size))
+		fmt.Printf("> %-18s : %6d\n", "Complexity in size", int(solver.complexity_in_size))
 		fmt.Printf("> %-18s : %6.3fs\n", "Time taken", time_elapsed.Seconds())
 		time.Sleep(100000 * 1000)
 	}
-	
 }
 
 

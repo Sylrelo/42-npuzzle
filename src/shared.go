@@ -44,10 +44,13 @@ type Node struct {
 }
 
 type Solver struct {
-	closed_set 	[][]int
-	open_set	PriorityQueue
-	heuristic	HeuristicFct
+	closed_set 			[][]int
+	open_set			PriorityQueue
+	heuristic			HeuristicFct
+	complexity_in_size	float64
+	complexity_in_time	int
 }
+
 type Common struct {
 	goal		[]int
 	size		int
