@@ -177,7 +177,8 @@ func Solve(wg *sync.WaitGroup, common Common, intial_board []int, algo int, heur
 		fmt.Printf("> %-18s : %6d\n", "Parents", solution_node.parent.parent_count)
 		fmt.Printf("> %-18s : %6d\n", "Complexity in time", len(solver.closed_set))
 		fmt.Printf("> %-18s : %6d\n", "Complexity in size", int(complexity_in_size))
-		fmt.Printf("> %-18s : %6.3fs\n", "Time taken", time_elapsed.Seconds() )
+		fmt.Printf("> %-18s : %6.3fs\n", "Time taken", time_elapsed.Seconds())
+		time.Sleep(100000 * 1000)
 	}
 	
 }
