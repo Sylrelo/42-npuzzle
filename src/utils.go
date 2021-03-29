@@ -45,11 +45,11 @@ func Compare(a []int, b []int) bool {
 func PrintBoard(board []int, size int) {
 	for j := 0; j < size; j++ {
 		for i := 0; i < size; i++ {
-			fmt.Print(board[size * j + i], " ")
+			fmt.Print(board[size*j+i], " ")
 		}
 		fmt.Println("")
 	}
-	
+
 	// for i := 0; i < size; i++ {
 	// 	fmt.Print(board[(size)+i], " ")
 	// }
@@ -60,43 +60,38 @@ func PrintBoard(board []int, size int) {
 	fmt.Println("\n ")
 }
 
-// func GenerateSnail(col int, row int) []int {
-// 	result 		:= make([]int, col * row)
-// 	//direction 	:= RIGHT
-// 	irow		:= 0
-// 	crow		:= 0
-// 	dir			:= 1
-// 	//icol		:= 0
-// 	//istart		:= 0
+func GenerateSnail(size int) []int{
+	snail := make([]int, 0)
+	cur := 1
+	x 	:= 0
+	ix 	:= 1
+	y 	:= 0
+	iy 	:= 0
 
-// 	for i := col * row - 1; i >= 0; i-- {
+	for i := 0; i < size * size; i++ {
+		snail = append(snail, -1)
+	}
 
-// 		irow = 0
-// 		for irow < (col * row) {
+	for {
+		snail[x + y * size] = cur
+		if cur == 0 {
+			break 
+		}
+		cur += 1
+		if x + ix == size || x + ix < 0 || (ix != 0 && snail[x + ix + y * size] != -1) {
+			iy = ix
+			ix = 0
+		} else if y + iy == size || y + iy < 0 || (iy != 0 && snail[x + (iy + y) * size] != -1) {
+			ix = -iy
+			iy = 0
+		}
+		x += ix
+		y += iy
 
-// 			crow += dir
-// 			irow++
+		if cur == size * size {
+			cur = 0
+		}
+	}
 
-// 			dir *= -1
-// 		}
-// 		// result[i - 1] = 0
-// 		// if direction == RIGHT && icol < col {
-// 		// 	result[i - 1] = i
-// 		// 	icol++
-// 		// }
-// 		// if icol == 3 && direction == RIGHT {
-// 		// 	direction = DOWN
-// 		// 	irow = 0
-// 		// 	istart = row + icol
-// 		// }
-// 		// if direction == DOWN && irow <= 1 {
-// 		// 	result[istart + (3 * irow) - 1] = 9
-// 		// 	irow++
-// 		// }
-// 		// _ = istart
-		
-// 	}
-
-// 	_ = irow
-// 	return result
-// }
+	return snail
+}

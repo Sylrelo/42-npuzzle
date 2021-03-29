@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"container/heap"
 	"fmt"
+	"io/ioutil"
 	"math"
 	"os"
 	"strconv"
@@ -100,42 +101,76 @@ func GenerateHistory(node Node) {
 	fmt.Print("\n")
 }
 
+func ParseContent(content string) (int, []int) {
+	var size		int
+	var result		[]int
+
+	size				= -1
+	content_splitted 	:= strings.Split(content, "\n")
+
+	for line_number, line := range content_splitted {
+		if len(line) < 1 || line[0] == '#' {
+			continue
+		}
+		if size == -1 {
+			atoi, err := strconv.Atoi(line)
+			if err != nil {
+				fmt.Println("Error puzzle size, line", line_number + 1)
+				os.Exit(0)
+			}
+			size = atoi
+		} else {
+			split_values := strings.Split(line, " ")
+			for _, nb := range split_values {
+				tmp := strings.TrimSpace(nb)
+				if len(tmp) > 0 {
+					atoi, err := strconv.Atoi(tmp)
+					if err != nil {
+						fmt.Println("Error puzzle, line", line_number + 1)
+						os.Exit(0)
+					}
+					result = append(result, atoi)
+				}
+			}
+		}
+	}
+	return size, result
+}
+
+func Parse() (int, []int) {
+	args := os.Args[1:]
+
+	if len(args) > 0 {
+		if (args[0] == "-f") {
+			if len(args) > 1 {
+				data, err := ioutil.ReadFile(args[1])
+				if err != nil {
+					fmt.Println("Error reading file", args[1])
+					os.Exit(1)
+				}
+				return ParseContent(string(data))
+			} else {
+				fmt.Println("You must specify a file")
+				os.Exit(1)
+			}
+		}
+	} else {
+		reader 		:= bufio.NewReader(os.Stdin)
+		content, _ 	:= reader.ReadString(0)
+		return ParseContent(content)
+	}
+	return -1, nil
+}
+
 func main() {
 	var common				Common
 	var base 				[]int
 	var node 				Node
 	var complexity_in_size	float64
 
-	common.open_set = make(PriorityQueue, 0)
-	common.goal		= []int{1, 2, 3, 8, 0, 4, 7, 6, 5}
-	// common.goal		= []int{
-	// 	1, 2, 3, 4, 
-	// 	12, 13, 14, 5, 
-	// 	11, 0, 15, 6, 
-	// 	10, 9, 8, 7}
-	common.size		= 0
-
-	reader 				:= bufio.NewReader(os.Stdin)
-	content, _ 			:= reader.ReadString(0)
-	content_splitted 	:= strings.Split(content, "\n")
-
-	if content_splitted[0][0] == '#' { 
-		common.size, _ = strconv.Atoi(content_splitted[1])
-
-		for i := 2; i < 2 + common.size; i++ {
-
-			split_values := strings.Split(content_splitted[i], " ")
-			for _, n := range split_values {
-				tmp := strings.TrimSpace(n)
-				if len(tmp) > 0 {
-			 		atoi, _ := strconv.Atoi(tmp)
-			 		base = append(base, atoi)
-				}
-			}
-		}
-	}
-
-	fmt.Println(base)
+	common.open_set 		= make(PriorityQueue, 0)
+	common.size, base 		= Parse()
+	common.goal				= GenerateSnail(common.size)
 
 	PrintBoard(base, common.size)
 
