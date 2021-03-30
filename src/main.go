@@ -110,6 +110,20 @@ func GetHeuristicName(heuristic int) string {
 	}
 }
 
+func BreadthFirstSearch(common Common, solver *Solver, node Node) (bool, Node) {
+	_ = common
+	_ = solver
+	_ = node
+	return false, Node{}
+}
+
+func IDAstar(common Common, solver *Solver, node Node) (bool, Node) {
+	_ = common
+	_ = solver
+	_ = node
+	return false, Node{}
+}
+
 func Astar(common Common, solver *Solver, node Node) (bool, Node) {
 	for {
 		if solver.open_set.Len() == 0 {
