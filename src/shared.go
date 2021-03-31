@@ -48,7 +48,7 @@ type Solver struct {
 	open_set			PriorityQueue
 	heuristic			HeuristicFct
 	complexity_in_size	float64
-	complexity_in_time	int
+	index				int
 }
 
 type Common struct {

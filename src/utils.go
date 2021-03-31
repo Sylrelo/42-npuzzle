@@ -1,12 +1,8 @@
 package main
 
-import "fmt"
-
-func FindIndexLinearConflict(goal []int, board []int, g int, b int) [4]int {
-	ret := [4]int{0, 0, 0, 0}
-
-	return ret
-}
+import (
+	"fmt"
+)
 
 func FindIndex(haystack []int, needle int) int {
 	for i, n := range haystack {
@@ -17,7 +13,7 @@ func FindIndex(haystack []int, needle int) int {
 	return -1
 }
 
-func Same(a [][]int, b []int) bool {
+func Same(a [][]int, b []int, size int) bool {
 	for _, set := range a {
 		count := 0
 		for i, n := range set {
@@ -25,7 +21,7 @@ func Same(a [][]int, b []int) bool {
 				count++
 			}
 		}
-		if count == 9 {
+		if count == size {
 			return true
 		}
 	}
@@ -42,10 +38,40 @@ func Compare(a []int, b []int) bool {
 	return count == len(a)
 }
 
+func CompareRocol(a []int, b []int, size int, index int) bool {
+	count := 0
+
+	// fmt.Println(index, size * 2, "\n ")
+	//PrintBoardOnliner(a, size)
+
+	for row := index + 1; row < size; row++ {
+		//fmt.Print(a[row + index * size], "  ")
+		if a[row + index * size] == b[row + index * size] {
+			count++
+		}
+	}
+
+	for col := index; col < size; col++ {
+		//fmt.Print(a[index + col * size], "  ")
+		if a[index + col * size] == b[index + col * size] {
+			count++
+		}
+	}
+	return count == size * 2
+}
+
+
+func PrintBoardOnliner(board []int, size int) {
+	for _, n := range board {
+		fmt.Printf("%3d " , n)
+	}
+	fmt.Println("")
+
+}
 func PrintBoard(board []int, size int) {
 	for j := 0; j < size; j++ {
 		for i := 0; i < size; i++ {
-			fmt.Print(board[size*j+i], " ")
+			fmt.Printf("%4d ", board[size * j + i])
 		}
 		fmt.Println("")
 	}

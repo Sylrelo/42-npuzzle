@@ -4,12 +4,13 @@ import (
 	"container/heap"
 	"fmt"
 	"math"
+	"os"
 	"sync"
 	"time"
 )
 
 func NewNode(common *Common, solver *Solver, current_node Node, new_board []int, zindex int, direction int) {
-	if Same(solver.closed_set, new_board) {
+	if Same(solver.closed_set, new_board, common.size * common.size) {
 		//fmt.Println("\033[33m~ Board already explored. Skipping.\033[0m")
 		return
 	}
@@ -126,6 +127,8 @@ func IDAstar(common Common, solver *Solver, node Node) (bool, Node) {
 
 func Astar(common Common, solver *Solver, node Node) (bool, Node) {
 	for {
+	//	fmt.Print("\033[H\033[2J")
+		//time.Sleep(1000000)
 		if solver.open_set.Len() == 0 {
 			fmt.Println("\033[1;31mEmpty queue, break.\033[0m")
 			break
@@ -138,11 +141,19 @@ func Astar(common Common, solver *Solver, node Node) (bool, Node) {
 		if Compare(node.board, common.goal) {
 			return true, node
 		}
+		//PrintBoardOnliner(node.board, common.size)
+
+		// if (common.size >= 4 && CompareRocol(node.board, common.goal, common.size, solver.index)) {
+		// 	PrintBoard(node.board, common.size)
+		// 	solver.index++
+		// }
 
 		Move(&common, solver, node, UP)
 		Move(&common, solver, node, DOWN)
 		Move(&common, solver, node, LEFT)
 		Move(&common, solver, node, RIGHT)
+
+		os.Exit(1)
 	}
 	return false, Node{}
 }
@@ -150,18 +161,21 @@ func Astar(common Common, solver *Solver, node Node) (bool, Node) {
 func Solve(wg *sync.WaitGroup, common Common, intial_board []int, algo int, heuristic int) {
 	defer wg.Done()
 
-	//var complexity_in_size	float64
-	var node 				Node
-	var	solver				Solver
-	var solution			bool
-	var solution_node		Node
+	var node 					Node
+	var	solver					Solver
+	var solution				bool
+	var solution_node			Node
 
 	solver.open_set 			= make(PriorityQueue, 0)
 	solver.closed_set 			= make([][]int, 0)
 	solver.complexity_in_size	= 0
+	solver.index				= 0
+
+	// if (common.size > 3) {
+	// 	solver.index = 1
+	// }
 
 	solution					= false
-
 
 	switch heuristic {
 		case MANHATTAN:
@@ -219,8 +233,8 @@ func main() {
 	PrintBoard(initial_board, common.size)
 
 	wg.Add(3)
-	go Solve(&wg, common, initial_board, ASTAR, HAMMING)
-	go Solve(&wg, common, initial_board, ASTAR, MANHATTAN)
+	//go Solve(&wg, common, initial_board, ASTAR, HAMMING)
+	//go Solve(&wg, common, initial_board, ASTAR, MANHATTAN)
 	go Solve(&wg, common, initial_board, ASTAR, LINEAR_CONFLICT)
 	wg.Wait()
 }
