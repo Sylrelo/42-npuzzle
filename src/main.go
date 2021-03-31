@@ -4,18 +4,19 @@ import (
 	"container/heap"
 	"fmt"
 	"math"
-	"os"
 	"sync"
 	"time"
 )
 
 func NewNode(common *Common, solver *Solver, current_node Node, new_board []int, zindex int, direction int) {
+	//if _, exists := solver.closed_set2[fmt.Sprint(new_board)]; exists {
+	//	return
+	//}
 	if Same(solver.closed_set, new_board, common.size * common.size) {
-		//fmt.Println("\033[33m~ Board already explored. Skipping.\033[0m")
 		return
 	}
-
 	priority := current_node.parent_count + solver.heuristic(new_board, common.goal, common.size)
+	//priority :=  current_node.cost 
 	new_node := Node{
 		board:        new_board,
 		move:         direction,
@@ -30,18 +31,20 @@ func NewNode(common *Common, solver *Solver, current_node Node, new_board []int,
 }
 
 func Move(common *Common, solver *Solver, current_node Node, direction int) {
-	new_board := make([]int, len(current_node.board))
+	new_board := make([]int, common.size * common.size)
 	copy(new_board, current_node.board)
 
 	switch direction {
 		case UP:
 			if current_node.zindex - common.size >= 0 {
+				//fmt.Println("UP " , current_node.zindex, current_node.zindex - common.size)
 				new_board[current_node.zindex] = new_board[current_node.zindex - common.size]
 				new_board[current_node.zindex - common.size] = 0
 				NewNode(common, solver, current_node, new_board, current_node.zindex - common.size, direction)
 			}
 		case DOWN:
-			if current_node.zindex + common.size < common.size * common.size {
+			if current_node.zindex + common.size < common.size * common.size  {
+				//fmt.Println("DOWN ", current_node.zindex, current_node.zindex + 1)
 				new_board[current_node.zindex] = new_board[current_node.zindex + common.size]
 				new_board[current_node.zindex + common.size] = 0
 				NewNode(common, solver, current_node, new_board, current_node.zindex + common.size, direction)
@@ -53,7 +56,7 @@ func Move(common *Common, solver *Solver, current_node Node, direction int) {
 				NewNode(common, solver, current_node, new_board, current_node.zindex - 1, direction)
 			}
 		case RIGHT:
-			if current_node.zindex % common.size <= 1 {
+			if current_node.zindex % common.size < common.size - 1 {
 				new_board[current_node.zindex] = new_board[current_node.zindex + 1]
 				new_board[current_node.zindex + 1] = 0
 				NewNode(common, solver, current_node, new_board, current_node.zindex + 1, direction)
@@ -61,6 +64,46 @@ func Move(common *Common, solver *Solver, current_node Node, direction int) {
 		default:
 			fmt.Print("--")
 	}
+}
+
+func MoveUNIT(board []int, size int, direction int) {
+	new_board := make([]int, size * size)
+	copy(new_board, board)
+
+
+	zindex := FindIndex(board, 0)
+
+	fmt.Println(direction, zindex)
+
+	switch direction {
+		case UP:
+			if zindex - size >= 0 {
+				new_board[zindex] = new_board[zindex - size]
+				new_board[zindex - size] = 0
+			}
+		case DOWN:
+			if zindex + size < size * size  {
+				new_board[zindex] = new_board[zindex + size]
+				new_board[zindex + size] = 0
+			}
+		case LEFT:
+			if zindex % size >= 1 {
+				new_board[zindex] = new_board[zindex - 1]
+				new_board[zindex - 1] = 0
+			}
+		case RIGHT:
+			fmt.Println(zindex, size, zindex % size)
+			if zindex % size < size - 1 {
+				new_board[zindex] = new_board[zindex + 1]
+				new_board[zindex + 1] = 0
+			}
+		default:
+			fmt.Print("--")
+	}
+	PrintBoard(new_board, size)
+	PrintBoardOnliner(board, size)
+	PrintBoardOnliner(new_board, size)
+	fmt.Println()
 }
 
 func GenerateHistory(node Node) {
@@ -138,11 +181,19 @@ func Astar(common Common, solver *Solver, node Node) (bool, Node) {
 		node 						:= heap.Pop(&solver.open_set).(*Item).node
 		solver.closed_set 			= append(solver.closed_set, node.board)
 
+		//fmt.Println(int64(node.board))
+
+		//fmt.Println(fmt.Sprint(node.board))
+		
+		//solver.closed_set2[fmt.Sprint(node.board)] = struct{}{}
+
+
 		if Compare(node.board, common.goal) {
 			return true, node
 		}
 		//PrintBoardOnliner(node.board, common.size)
 
+		//fmt.Println(solver.open_set.Len(), len(solver.closed_set))
 		// if (common.size >= 4 && CompareRocol(node.board, common.goal, common.size, solver.index)) {
 		// 	PrintBoard(node.board, common.size)
 		// 	solver.index++
@@ -153,7 +204,7 @@ func Astar(common Common, solver *Solver, node Node) (bool, Node) {
 		Move(&common, solver, node, LEFT)
 		Move(&common, solver, node, RIGHT)
 
-		os.Exit(1)
+		//os.Exit(1)
 	}
 	return false, Node{}
 }
@@ -170,10 +221,31 @@ func Solve(wg *sync.WaitGroup, common Common, intial_board []int, algo int, heur
 	solver.closed_set 			= make([][]int, 0)
 	solver.complexity_in_size	= 0
 	solver.index				= 0
+	solver.closed_set2			= make(map[string]struct{})
 
 	// if (common.size > 3) {
 	// 	solver.index = 1
 	// }
+
+	old_closed_count := 0
+	old_open_count := 0
+
+	ticker := time.NewTicker(1 * time.Second)
+
+	go func() {
+		for {
+			select {
+			case <- ticker.C:
+				fmt.Println("Explored nodes : ", len(solver.closed_set))
+				fmt.Println("Opens nodes : ", solver.open_set.Len())
+				fmt.Println(len(solver.closed_set) - old_closed_count, " nodes / s" )
+				fmt.Println(solver.open_set.Len() - old_open_count, " nodes / s" )
+				//old_closed_count = len(solver.closed_set2)
+				old_closed_count = len(solver.closed_set)
+				old_open_count = solver.open_set.Len()
+			}
+		}
+	}()
 
 	solution					= false
 
@@ -230,8 +302,20 @@ func main() {
 	common.size, initial_board 	= Parse()
 	common.goal					= GenerateSnail(common.size)
 
-	PrintBoard(initial_board, common.size)
+	//PrintBoard(initial_board, common.size)
 
+	//testBoard := []int{11, 11, 11, 11,
+	//					11, 0, 11, 11,
+	//					11, 11, 11, 11,
+	//					11, 11, 11, 11}
+	// PrintBoard(testBoard, 4)
+
+	// MoveUNIT(testBoard, 4, UP)
+	// MoveUNIT(testBoard, 4, DOWN)
+	// MoveUNIT(testBoard, 4, LEFT)
+	// MoveUNIT(testBoard, 4, RIGHT)
+
+	// os.Exit(1)
 	wg.Add(3)
 	//go Solve(&wg, common, initial_board, ASTAR, HAMMING)
 	//go Solve(&wg, common, initial_board, ASTAR, MANHATTAN)

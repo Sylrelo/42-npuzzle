@@ -49,6 +49,8 @@ type Solver struct {
 	heuristic			HeuristicFct
 	complexity_in_size	float64
 	index				int
+
+	closed_set2			map[string]struct{}
 }
 
 type Common struct {

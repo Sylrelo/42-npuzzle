@@ -13,18 +13,21 @@ func FindIndex(haystack []int, needle int) int {
 	return -1
 }
 
-func Same(a [][]int, b []int, size int) bool {
-	for _, set := range a {
+func Same(closed [][]int, board []int, size int) bool {
+	for _, set := range closed {
 		count := 0
 		for i, n := range set {
-			if b[i] == n {
+			if board[i] == n {
 				count++
+			} else {
+				break
 			}
 		}
 		if count == size {
 			return true
 		}
-	}
+	_ = set
+}
 	return false
 }
 
@@ -63,7 +66,10 @@ func CompareRocol(a []int, b []int, size int, index int) bool {
 
 func PrintBoardOnliner(board []int, size int) {
 	for _, n := range board {
-		fmt.Printf("%3d " , n)
+		if n == 0 {
+			fmt.Print("\033[0;31m")
+		}
+		fmt.Printf("%3d \033[0m" , n)
 	}
 	fmt.Println("")
 
@@ -71,7 +77,10 @@ func PrintBoardOnliner(board []int, size int) {
 func PrintBoard(board []int, size int) {
 	for j := 0; j < size; j++ {
 		for i := 0; i < size; i++ {
-			fmt.Printf("%4d ", board[size * j + i])
+			if board[size * j + i] == 0 {
+				fmt.Print("\033[0;31m")
+			}
+			fmt.Printf("%4d\033[0m ", board[size * j + i])
 		}
 		fmt.Println("")
 	}

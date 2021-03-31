@@ -51,6 +51,7 @@ func Parse() (int, []int) {
 
 	// filepath 	:= flag.String("file", "", "The input file for the puzzle")
 	// greedy 		:= flag.Bool("g", false, "This flag enable the greedy-search")
+	// uniform 		:= flag.Bool("u", false, "This flag enable the uniform-cost search")
 	// algo 		:= flag.String("a", "", "Run the specified algorithm only [ ASTAR, IDASTAR, BFS, DSF ]")
 	// heuristic 	:= flag.String("h", "", "Run the specified heuristic only [ MANHATTAN, MISPLACED, LINEARCONFLICT ]")
 	// flag.Parse()
