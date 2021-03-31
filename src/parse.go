@@ -48,6 +48,13 @@ func ParseContent(content string) (int, []int) {
 func Parse() (int, []int) {
 	args := os.Args[1:]
 
+
+	// filepath 	:= flag.String("file", "", "The input file for the puzzle")
+	// greedy 		:= flag.Bool("g", false, "This flag enable the greedy-search")
+	// algo 		:= flag.String("a", "", "Run the specified algorithm only [ ASTAR, IDASTAR, BFS, DSF ]")
+	// heuristic 	:= flag.String("h", "", "Run the specified heuristic only [ MANHATTAN, MISPLACED, LINEARCONFLICT ]")
+	// flag.Parse()
+
 	if len(args) > 0 {
 		if args[0] == "-f" {
 			if len(args) > 1 {
