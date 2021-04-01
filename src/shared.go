@@ -51,6 +51,7 @@ type Solver struct {
 	index				int
 
 	closed_set2			map[string]struct{}
+	lifo_stack			*LIFO
 }
 
 type Common struct {

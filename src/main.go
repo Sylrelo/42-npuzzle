@@ -4,6 +4,8 @@ import (
 	"container/heap"
 	"fmt"
 	"math"
+	"os"
+	"runtime"
 	"sync"
 	"time"
 )
@@ -162,6 +164,52 @@ func BreadthFirstSearch(common Common, solver *Solver, node Node) (bool, Node) {
 }
 
 func IDAstar(common Common, solver *Solver, node Node) (bool, Node) {
+
+	fmt.Println("Starting IDA*")
+	//solver.closed_set
+	solver.lifo_stack = New()
+
+	//cost := ManhattanDistance(node.board, common.goal, common.size) + 2 * LinearConflict(node.board, common.goal, common.size)
+
+
+	var current_node 	*Node
+	var cost			int
+	var bound			int
+
+	iter_n 	:= 0
+	//min		:= math.Inf()
+	//var ret Node
+	for {
+
+		current_node = solver.lifo_stack.Pop()
+		cost := solver.heuristic(current_node.board, common.goal, common.size)
+		bound = cost
+
+		if cost > bound {
+			continue 
+		}
+
+		if Compare(current_node.board, common.goal) {
+			break 
+		}
+
+
+
+		//if ret.cost > 150 {
+		//	break
+		//}
+		fmt.Println(iter_n)
+		iter_n++
+	}
+	os.Exit(1)
+
+	_ = cost
+	// for currnode := solver.lifo_stack.Pop(); currnode != nil; {
+
+		
+	// 	fmt.Println(currnode)
+	// }
+
 	_ = common
 	_ = solver
 	_ = node
@@ -294,10 +342,14 @@ func Solve(wg *sync.WaitGroup, common Common, intial_board []int, algo int, heur
 }
 
 
+func bToMb(b uint64) uint64 {
+    return b / 1024 / 1024
+}
+
 func main() {
 	var common					Common
 	var initial_board 			[]int
-	var wg 						sync.WaitGroup
+	//var wg 						sync.WaitGroup
 
 	common.size, initial_board 	= Parse()
 	common.goal					= GenerateSnail(common.size)
@@ -316,9 +368,58 @@ func main() {
 	// MoveUNIT(testBoard, 4, RIGHT)
 
 	// os.Exit(1)
-	wg.Add(3)
+	//wg.Add(3)
 	//go Solve(&wg, common, initial_board, ASTAR, HAMMING)
 	//go Solve(&wg, common, initial_board, ASTAR, MANHATTAN)
-	go Solve(&wg, common, initial_board, ASTAR, LINEAR_CONFLICT)
-	wg.Wait()
+	//go Solve(&wg, common, initial_board, ASTAR, LINEAR_CONFLICT)
+	//wg.Wait()
+//
+	//openhash 	:= make(map[string]Node)
+	//closedhash 	:= make(map[string]Node)
+//
+	//test2 	:= make([]Node, 0)
+	//lala 	:= make(PriorityQueue, 0)
+
+	for i := 0; i < 10000000; i++ {
+		//openhash[fmt.Sprint(i * 1000000)] = Node{
+		//	board: []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15},
+		//	cost: i,
+		//	distance: i,
+		//	parent_count: i,
+		//}
+
+		//closedhash[fmt.Sprint(i * 1000000)] = Node{}
+		//heap.Push(&lala, &Item{node: Node{}, priority: i})
+
+	}	
+
+	//_ = openhash
+	//_ = closedhash
+	//_ = lala
+	//_ = test2
+
+	new_astar(&common, initial_board)
+
+	var m runtime.MemStats
+        runtime.ReadMemStats(&m)
+        // For info on each, see: https://golang.org/pkg/runtime/#MemStats
+        fmt.Printf("\tAlloc = %v MiB\n", bToMb(m.Alloc))
+        fmt.Printf("\tTotalAlloc = %v MiB\n", bToMb(m.TotalAlloc))
+        fmt.Printf("\tSys = %v MiB\n", bToMb(m.Sys))
+        fmt.Printf("\tNumGC = %v\n", m.NumGC)
+		
+	os.Exit(1)
+
+	node := Node{
+		board:        initial_board,
+		move:         NONE,
+		cost:         0,
+		parent_count: 0,
+		distance:     0,
+		parent:       nil,
+		zindex:       FindIndex(initial_board, 0)}
+
+	var solver Solver
+	solver.heuristic = LinearConflict
+	IDAstar(common, &solver, node)
 }

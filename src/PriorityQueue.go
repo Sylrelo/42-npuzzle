@@ -1,5 +1,9 @@
 package main
 
+import (
+	"container/heap"
+)
+
 type Item struct {
 	node     Node
 	priority int
@@ -27,6 +31,7 @@ func (pq *PriorityQueue) Push(x interface{}) {
 	item 		:= x.(*Item)
 	item.index 	= n
 	*pq 		= append(*pq, item)
+
 }
 
 func (pq *PriorityQueue) Pop() interface{} {
@@ -36,5 +41,12 @@ func (pq *PriorityQueue) Pop() interface{} {
 	old[n - 1] 	= nil
 	item.index 	= -1
 	*pq 		= old[0 : n - 1]
+	return item
+}
+
+func (pq *PriorityQueue) update(item *Item, node Node, priority int) *Item {
+	item.node = node
+	item.priority = priority
+	heap.Fix(pq, item.index)
 	return item
 }
