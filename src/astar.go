@@ -17,7 +17,11 @@ func GenerateNewNode(
 	zindex 			int, 
 	direction 		int) {
 
-	priority := current_node.parent_count + LinearConflict(new_board, common.goal, common.size)
+	// informed		f = g + h	;		à l'air de fonctionner
+	// uninformed 	f = h		; 		à l'air de fonctionner
+	// greedy 		f = g		; 		est-il fonctionnel ?
+
+	priority := current_node.parent_count// + LinearConflict(new_board, common.goal, common.size)
 
 	strb := fmt.Sprint(new_board)
 
@@ -30,46 +34,25 @@ func GenerateNewNode(
 		parent:       &current_node,
 		zindex:       zindex}
 
-	if existing_node, exists := open_hash[strb]; exists {
-		//fmt.Println("Open CRISIS" )
-		//fmt.Println(priority)
-		//fmt.Println(existing_node.priority)
-		//fmt.Println(existing_node.index)
-		if priority < existing_node.priority {
-			new_item := open_set.update(existing_node, existing_node.node, priority)
-			open_hash[fmt.Sprint(existing_node.node.board)] = new_item
-			return 
+	if pq, exists := open_hash[strb]; exists {
+		if priority < pq.priority {
+			new_item := open_set.update(pq, pq.node, priority)
+			open_hash[fmt.Sprint(pq.node.board)] = new_item
 		} 
 		return 
 	} else if closed_node, exists := closed[strb]; exists {
-			//fmt.Println("CLOSED NODE")
-			//fmt.Println(priority)
-			//fmt.Println(closed_node.cost)
 			if priority < closed_node.cost {
 				item := &Item{node: new_node, priority: priority}
 				heap.Push(open_set, item)
 				open_hash[strb] = item
 				delete(closed, strb)
-				return 
 			}
 			return
-			_ = closed_node
-			//os.Exit(1)
-		//	fmt.Println("Helo" )
-			//return
 		}
 	
-	//if Same(solver.closed_set, new_board, common.size * common.size) {
-	//	return
-	//}
-	//priority :=  current_node.cost 
-
-
 	item := &Item{node: new_node, priority: priority}
 	heap.Push(open_set, item)
 	open_hash[strb] = item
-
-	//fmt.Println("\033[1;36m+ Queue push\033[0m")
 }
 
 
