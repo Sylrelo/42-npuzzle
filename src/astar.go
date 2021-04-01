@@ -21,7 +21,7 @@ func GenerateNewNode(
 	// uninformed 	f = h		; 		à l'air de fonctionner
 	// greedy 		f = g		; 		est-il fonctionnel ?
 
-	priority := current_node.parent_count// + LinearConflict(new_board, common.goal, common.size)
+	priority := current_node.parent_count + LinearConflict(new_board, common.goal, common.size)
 
 	strb := fmt.Sprint(new_board)
 
@@ -132,10 +132,14 @@ func new_astar(common *Common, board []int) {
 			select {
 			case <- ticker.C:
 				fmt.Print("\033[H\033[2J")
+			//PrintBoard(node.board, common.size)
+
+
 				fmt.Println("Explored nodes : ", len(closed))
 				fmt.Println("Opens nodes : ", open_set.Len(), len(open_hash), open_set.Len() ==  len(open_hash))
 				fmt.Println(len(closed) - old_closed_count, " nodes / s" )
 				fmt.Println(open_set.Len() - old_open_count, " nodes / s" )
+
 				//old_closed_count = len(solver.closed_set2)
 				old_closed_count = len(closed)
 				old_open_count = open_set.Len()
@@ -149,30 +153,25 @@ func new_astar(common *Common, board []int) {
 		strb := fmt.Sprint(node.board)
 
 		delete(open_hash, strb)
-
-		//closed_set = append(closed_set, node)
 		closed[strb] = node
 
 		if Compare(node.board, common.goal) {
 			fmt.Println("Found goal :D")
 			fmt.Println(node.parent_count)
 			fmt.Println(node.parent)
+			//GenerateHistory(common, node)
 			
 				time_elapsed := time.Since(time_start)
 				fmt.Printf("> %-18s : %6.3fs\n", "Time taken", time_elapsed.Seconds())
 			break
 		}
+
+		//PrintBoardOnliner(node.board, common.size)
+
 		GetNextMoves(common, &open_set, open_hash, closed_set, closed, node, UP)
 		GetNextMoves(common, &open_set, open_hash, closed_set, closed, node, DOWN)
 		GetNextMoves(common, &open_set, open_hash, closed_set, closed, node, LEFT)
 		GetNextMoves(common, &open_set, open_hash, closed_set, closed, node, RIGHT)
-
-		//fmt.Println("Closed : ", len(closed))
-		//fmt.Println("Open : ",open_set.Len())
-		//fmt.Println()
 	}
 
-	_ = open_set
-	_ = open_hash
-	_ = closed
 }

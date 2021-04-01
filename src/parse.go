@@ -23,7 +23,8 @@ func ParseContent(content string) (int, []int) {
 		if size == -1 {
 			atoi, err := strconv.Atoi(line)
 			if err != nil {
-				fmt.Println("Error puzzle size, line", line_number+1)
+				fmt.Println(err)
+				fmt.Println("Error puzzle size, line", line_number + 1)
 				os.Exit(0)
 			}
 			size = atoi

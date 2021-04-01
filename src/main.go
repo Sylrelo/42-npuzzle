@@ -108,13 +108,13 @@ func MoveUNIT(board []int, size int, direction int) {
 	fmt.Println()
 }
 
-func GenerateHistory(node Node) {
+func GenerateHistory(common *Common, node Node) {
 	var nodes			[]Node
 	var reversed_nodes	[]Node
 
 	tmp := node
 	for {
-		//PrintBoard(tmp.board, Size{9, 3})
+		PrintBoard(tmp.board, common.size)
 		nodes = append(nodes, tmp)
 		if (tmp.parent == nil) {
 			break
@@ -354,8 +354,7 @@ func main() {
 	common.size, initial_board 	= Parse()
 	common.goal					= GenerateSnail(common.size)
 
-	//PrintBoard(initial_board, common.size)
-
+	PrintBoard(initial_board, common.size)
 	//testBoard := []int{11, 11, 11, 11,
 	//					11, 0, 11, 11,
 	//					11, 11, 11, 11,
