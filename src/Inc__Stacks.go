@@ -60,7 +60,7 @@ func (pq *PriorityQueue) update(item *Item, node Node, priority int) *Item {
 */
 
 type LIFO struct {
-	nodes []*Node
+	nodes []Node
 	count int
 }
 
@@ -68,14 +68,14 @@ func New() *LIFO {
 	return &LIFO{}
 }
 
-func (s *LIFO) Push(n *Node) {
+func (s *LIFO) Push(n Node) {
 	s.nodes = append(s.nodes[:s.count], n)
 	s.count++
 }
 
-func (s *LIFO) Pop() *Node {
+func (s *LIFO) Pop() Node {
 	if s.count == 0 {
-		return nil
+		return Node{} 
 	}
 	s.count--
 	return s.nodes[s.count]
@@ -83,4 +83,11 @@ func (s *LIFO) Pop() *Node {
 
 func (s *LIFO) Len() int {
 	return s.count
+}
+
+func (s *LIFO) Last() Node {
+	if s.count == 0 {
+		return Node{} 
+	}
+	return s.nodes[s.count - 1]
 }
