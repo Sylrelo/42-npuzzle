@@ -49,13 +49,25 @@ func GenerateNewNode(common *Common, open_set *PriorityQueue, open_hash map[stri
 
 func new_astar(common *Common, board []int) {
 
-	var node Node
+	var node 			Node
 
 	complexity_in_size 	:= 0
 	complexity_in_time 	:= 0
 	open_set 			:= make(PriorityQueue, 0)
 	open_hash 			:= make(map[string]*Item)
 	closed 				:= make(map[string]Node)
+
+	node = Node{
+		board:        board,
+		move:         NONE,
+		cost:         0,
+		parent_count: 0,
+		parent:       nil,
+		zindex:       FindIndex(board, 0)}
+
+	item 				:= &Item{node: node, priority: 0}
+	heap.Push(&open_set, item)
+	open_hash[fmt.Sprint(node.board)] = item
 
 	// switch heuristic {
 	// 	case MANHATTAN:
@@ -70,20 +82,10 @@ func new_astar(common *Common, board []int) {
 	// }
 
 
-	node = Node{
-		board:        board,
-		move:         NONE,
-		cost:         0,
-		parent_count: 0,
-		parent:       nil,
-		zindex:       FindIndex(board, 0)}
+	
 
-	item := &Item{node: node, priority: 0}
-	heap.Push(&open_set, item)
-	open_hash[fmt.Sprint(node.board)] = item
-
-	ticker := time.NewTicker(1 * time.Second)
-	time_start 				:= time.Now()
+	ticker 		:= time.NewTicker(1 * time.Second)
+	time_start 	:= time.Now()
 
 	var old_closed_count int
 	var old_open_count int
@@ -109,8 +111,9 @@ func new_astar(common *Common, board []int) {
 	
 	for open_set.Len() != 0 {
 
-		node = heap.Pop(&open_set).(*Item).node
-		strb := fmt.Sprint(node.board)
+		node 	= heap.Pop(&open_set).(*Item).node
+		strb 	:= fmt.Sprint(node.board)
+
 		delete(open_hash, strb)
 		closed[strb] = node
 
@@ -120,12 +123,12 @@ func new_astar(common *Common, board []int) {
 			complexity_in_size = len_open_set
 		}
 
-		_ = time_start
 		if Compare(node.board, common.goal) {
 			SolutionFound(common, Result{
 				time_start: time_start,
 				complexity_in_size: complexity_in_size,
 				complexity_in_time: complexity_in_time,
+				node: node,
 			})
 			break
 		}

@@ -67,6 +67,7 @@ func SolutionFound(common *Common, result Result) {
     //fmt.Printf("\tNumGC = %v\n", m.NumGC)
 
 
+	fmt.Printf("\033[1m\x1b[38;2;40;177;249m%-18s : \033[0m%d\n", "Number of moves", result.node.parent_count)
 	fmt.Printf("\033[1m\x1b[38;2;40;177;249m%-18s :\n", "Solution")
 }
 
