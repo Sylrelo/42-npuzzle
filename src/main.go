@@ -20,7 +20,8 @@ func main() {
 	//go Solve(&wg, common, initial_board, ASTAR, LINEAR_CONFLICT)
 	//wg.Wait()
 	
-	new_astar(&common, initial_board)
+	//new_astar(&common, initial_board)
+	IDA(&common, initial_board)
 
 	//var m runtime.MemStats
     //    runtime.ReadMemStats(&m)
