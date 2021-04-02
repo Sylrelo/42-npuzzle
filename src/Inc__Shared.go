@@ -1,5 +1,7 @@
 package main
 
+import "time"
+
 const (
 	NONE  			= iota
 	UP    			= iota
@@ -41,7 +43,6 @@ type Node struct {
 	board        []int
 	move         int
 	cost         int
-	distance     int
 	parent_count int
 	zindex       int
 }
@@ -51,4 +52,9 @@ type Common struct {
 	size		int
 }
 
-
+type Result struct {
+	node					Node
+	time_start				time.Time
+	complexity_in_size		int
+	complexity_in_time		int
+}

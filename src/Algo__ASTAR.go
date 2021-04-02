@@ -21,7 +21,6 @@ func GenerateNewNode(common *Common, open_set *PriorityQueue, open_hash map[stri
 		move:         direction,
 		cost:         priority,
 		parent_count: current_node.parent_count + 1,
-		distance:     priority,
 		parent:       &current_node,
 		zindex:       zindex}
 
@@ -47,48 +46,16 @@ func GenerateNewNode(common *Common, open_set *PriorityQueue, open_hash map[stri
 }
 
 
-func GenerateNextMoves(common *Common, current_node Node, direction int) (bool, []int, int) {
-	new_board 	:= make([]int, common.size * common.size)
-	zindex		:= current_node.zindex
-	copy(new_board, current_node.board)
-
-	switch direction {
-		case UP:
-			if zindex - common.size >= 0 {
-				new_board[zindex] = new_board[zindex - common.size]
-				new_board[zindex - common.size] = 0
-				zindex -= common.size
-			}
-		case DOWN:
-			if zindex + common.size < common.size * common.size  {
-				new_board[zindex] = new_board[zindex + common.size]
-				new_board[zindex + common.size] = 0
-				zindex += common.size
-			}
-		case LEFT:
-			if zindex % common.size >= 1 {
-				new_board[zindex] = new_board[zindex - 1]
-				new_board[zindex - 1] = 0
-				zindex -= 1
-			}
-		case RIGHT:
-			if zindex % common.size < common.size - 1 {
-				new_board[zindex] = new_board[zindex + 1]
-				new_board[zindex + 1] = 0
-				zindex += 1
-			}
-	}
-
-	return zindex != current_node.zindex, new_board, zindex
-}
 
 func new_astar(common *Common, board []int) {
 
 	var node Node
 
-	open_set 	:= make(PriorityQueue, 0)
-	open_hash 	:= make(map[string]*Item)
-	closed 		:= make(map[string]Node)
+	complexity_in_size 	:= 0
+	complexity_in_time 	:= 0
+	open_set 			:= make(PriorityQueue, 0)
+	open_hash 			:= make(map[string]*Item)
+	closed 				:= make(map[string]Node)
 
 	// switch heuristic {
 	// 	case MANHATTAN:
@@ -108,7 +75,6 @@ func new_astar(common *Common, board []int) {
 		move:         NONE,
 		cost:         0,
 		parent_count: 0,
-		distance:     0,
 		parent:       nil,
 		zindex:       FindIndex(board, 0)}
 
@@ -145,20 +111,22 @@ func new_astar(common *Common, board []int) {
 
 		node = heap.Pop(&open_set).(*Item).node
 		strb := fmt.Sprint(node.board)
-
 		delete(open_hash, strb)
 		closed[strb] = node
 
+		complexity_in_time++
+
+		if len_open_set := open_set.Len(); len_open_set > complexity_in_size {
+			complexity_in_size = len_open_set
+		}
+
+		_ = time_start
 		if Compare(node.board, common.goal) {
-			fmt.Println("Found goal :D")
-			fmt.Println(node.parent_count)
-			fmt.Println(node.parent)
-			//GenerateHistory(common, node)
-			
-		//fmt.Printf("> %-18s : %6d\n", "Complexity in time", len(solver.closed_set))
-		//fmt.Printf("> %-18s : %6d\n", "Complexity in size", int(solver.complexity_in_size))
-				time_elapsed := time.Since(time_start)
-				fmt.Printf("> %-18s : %3s\n", "Time taken", time_elapsed)
+			SolutionFound(common, Result{
+				time_start: time_start,
+				complexity_in_size: complexity_in_size,
+				complexity_in_time: complexity_in_time,
+			})
 			break
 		}
 
