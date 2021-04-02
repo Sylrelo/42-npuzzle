@@ -44,9 +44,6 @@ func Compare(a []int, b []int) bool {
 func CompareRocol(a []int, b []int, size int, index int) bool {
 	count := 0
 
-	// fmt.Println(index, size * 2, "\n ")
-	//PrintBoardOnliner(a, size)
-
 	for row := index + 1; row < size; row++ {
 		//fmt.Print(a[row + index * size], "  ")
 		if a[row + index * size] == b[row + index * size] {
