@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -24,7 +23,7 @@ func ParseContent(content string) (int, []int) {
 			atoi, err := strconv.Atoi(line)
 			if err != nil {
 				fmt.Println(err)
-				fmt.Println("Error puzzle size, line", line_number + 1)
+				fmt.Println("Error puzzle size, line", line_number+1)
 				os.Exit(0)
 			}
 			size = atoi
@@ -49,7 +48,6 @@ func ParseContent(content string) (int, []int) {
 func Parse() (int, []int) {
 	args := os.Args[1:]
 
-
 	// filepath 	:= flag.String("file", "", "The input file for the puzzle")
 	// greedy 		:= flag.Bool("g", false, "This flag enable the greedy-search")
 	// uniform 		:= flag.Bool("u", false, "This flag enable the uniform-cost search")
@@ -60,7 +58,7 @@ func Parse() (int, []int) {
 	if len(args) > 0 {
 		if args[0] == "-f" {
 			if len(args) > 1 {
-				data, err := ioutil.ReadFile(args[1])
+				data, err := os.ReadFile(args[1])
 				if err != nil {
 					fmt.Println("Error reading file", args[1])
 					os.Exit(1)
@@ -72,10 +70,11 @@ func Parse() (int, []int) {
 			}
 		}
 	} else {
-		reader 		:= bufio.NewReader(os.Stdin)
-		content, _ 	:= reader.ReadString(0)
+		reader := bufio.NewReader(os.Stdin)
+		content, _ := reader.ReadString(0)
 		return ParseContent(content)
 	}
+
 	fmt.Println("Parsing failed for unknown reason.")
 	os.Exit(1)
 	return -1, nil

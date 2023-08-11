@@ -28,34 +28,32 @@ func GenerateNewNode(common *Common, open_set *PriorityQueue, open_hash map[stri
 		if priority < pq.priority {
 			new_item := open_set.update(pq, pq.node, priority)
 			open_hash[fmt.Sprint(pq.node.board)] = new_item
-		} 
-		return 
-	} else if closed_node, exists := closed[strb]; exists {
-			if priority < closed_node.cost {
-				item := &Item{node: new_node, priority: priority}
-				heap.Push(open_set, item)
-				open_hash[strb] = item
-				delete(closed, strb)
-			}
-			return
 		}
-	
+		return
+	} else if closed_node, exists := closed[strb]; exists {
+		if priority < closed_node.cost {
+			item := &Item{node: new_node, priority: priority}
+			heap.Push(open_set, item)
+			open_hash[strb] = item
+			delete(closed, strb)
+		}
+		return
+	}
+
 	item := &Item{node: new_node, priority: priority}
 	heap.Push(open_set, item)
 	open_hash[strb] = item
 }
 
-
-
 func new_astar(common *Common, board []int) {
 
-	var node 			Node
+	var node Node
 
-	complexity_in_size 	:= 0
-	complexity_in_time 	:= 0
-	open_set 			:= make(PriorityQueue, 0)
-	open_hash 			:= make(map[string]*Item)
-	closed 				:= make(map[string]Node)
+	complexity_in_size := 0
+	complexity_in_time := 0
+	open_set := make(PriorityQueue, 0)
+	open_hash := make(map[string]*Item)
+	closed := make(map[string]Node)
 
 	node = Node{
 		board:        board,
@@ -65,7 +63,7 @@ func new_astar(common *Common, board []int) {
 		parent:       nil,
 		zindex:       FindIndex(board, 0)}
 
-	item 				:= &Item{node: node, priority: 0}
+	item := &Item{node: node, priority: 0}
 	heap.Push(&open_set, item)
 	open_hash[fmt.Sprint(node.board)] = item
 
@@ -81,26 +79,22 @@ func new_astar(common *Common, board []int) {
 	// 		return
 	// }
 
-
-	
-
-	ticker 		:= time.NewTicker(1 * time.Second)
-	time_start 	:= time.Now()
+	ticker := time.NewTicker(1 * time.Second)
+	time_start := time.Now()
 
 	var old_closed_count int
 	var old_open_count int
 	go func() {
 		for {
 			select {
-			case <- ticker.C:
+			case <-ticker.C:
 				fmt.Print("\033[H\033[2J")
-			//PrintBoard(node.board, common.size)
-
+				//PrintBoard(node.board, common.size)
 
 				fmt.Println("Explored nodes : ", len(closed))
-				fmt.Println("Opens nodes : ", open_set.Len(), len(open_hash), open_set.Len() ==  len(open_hash))
-				fmt.Println(len(closed) - old_closed_count, " nodes / s" )
-				fmt.Println(open_set.Len() - old_open_count, " nodes / s" )
+				fmt.Println("Opens nodes : ", open_set.Len(), len(open_hash), open_set.Len() == len(open_hash))
+				fmt.Println(len(closed)-old_closed_count, " nodes / s")
+				fmt.Println(open_set.Len()-old_open_count, " nodes / s")
 
 				//old_closed_count = len(solver.closed_set2)
 				old_closed_count = len(closed)
@@ -108,11 +102,11 @@ func new_astar(common *Common, board []int) {
 			}
 		}
 	}()
-	
+
 	for open_set.Len() != 0 {
 
-		node 	= heap.Pop(&open_set).(*Item).node
-		strb 	:= fmt.Sprint(node.board)
+		node = heap.Pop(&open_set).(*Item).node
+		strb := fmt.Sprint(node.board)
 
 		delete(open_hash, strb)
 		closed[strb] = node
@@ -125,11 +119,15 @@ func new_astar(common *Common, board []int) {
 
 		if Compare(node.board, common.goal) {
 			SolutionFound(common, Result{
-				time_start: time_start,
+				time_start:         time_start,
 				complexity_in_size: complexity_in_size,
 				complexity_in_time: complexity_in_time,
-				node: node,
+				node:               node,
 			})
+
+			fmt.Println(common.goal, node.board)
+
+			GenerateHistory(common, node)
 			break
 		}
 
@@ -138,7 +136,7 @@ func new_astar(common *Common, board []int) {
 				GenerateNewNode(common, &open_set, open_hash, closed, node, board, zindex, dir)
 			}
 		}
-	
+
 	}
 
 }

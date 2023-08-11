@@ -26,8 +26,8 @@ func Same(closed [][]int, board []int, size int) bool {
 		if count == size {
 			return true
 		}
-	_ = set
-}
+		_ = set
+	}
 	return false
 }
 
@@ -46,27 +46,26 @@ func CompareRocol(a []int, b []int, size int, index int) bool {
 
 	for row := index + 1; row < size; row++ {
 		//fmt.Print(a[row + index * size], "  ")
-		if a[row + index * size] == b[row + index * size] {
+		if a[row+index*size] == b[row+index*size] {
 			count++
 		}
 	}
 
 	for col := index; col < size; col++ {
 		//fmt.Print(a[index + col * size], "  ")
-		if a[index + col * size] == b[index + col * size] {
+		if a[index+col*size] == b[index+col*size] {
 			count++
 		}
 	}
-	return count == size * 2
+	return count == size*2
 }
-
 
 func PrintBoardOnliner(board []int, size int) {
 	for _, n := range board {
 		if n == 0 {
 			fmt.Print("\033[0;31m")
 		}
-		fmt.Printf("%3d \033[0m" , n)
+		fmt.Printf("%3d \033[0m", n)
 	}
 	fmt.Println("")
 
@@ -74,10 +73,10 @@ func PrintBoardOnliner(board []int, size int) {
 func PrintBoard(board []int, size int) {
 	for j := 0; j < size; j++ {
 		for i := 0; i < size; i++ {
-			if board[size * j + i] == 0 {
+			if board[size*j+i] == 0 {
 				fmt.Print("\033[0;31m")
 			}
-			fmt.Printf("%4d\033[0m ", board[size * j + i])
+			fmt.Printf("%4d\033[0m ", board[size*j+i])
 		}
 		fmt.Println("")
 	}
@@ -92,35 +91,35 @@ func PrintBoard(board []int, size int) {
 	fmt.Println("\n ")
 }
 
-func GenerateSnail(size int) []int{
+func GenerateSnail(size int) []int {
 	snail := make([]int, 0)
 	cur := 1
-	x 	:= 0
-	ix 	:= 1
-	y 	:= 0
-	iy 	:= 0
+	x := 0
+	ix := 1
+	y := 0
+	iy := 0
 
-	for i := 0; i < size * size; i++ {
+	for i := 0; i < size*size; i++ {
 		snail = append(snail, -1)
 	}
 
 	for {
-		snail[x + y * size] = cur
+		snail[x+y*size] = cur
 		if cur == 0 {
-			break 
+			break
 		}
 		cur += 1
-		if x + ix == size || x + ix < 0 || (ix != 0 && snail[x + ix + y * size] != -1) {
+		if x+ix == size || x+ix < 0 || (ix != 0 && snail[x+ix+y*size] != -1) {
 			iy = ix
 			ix = 0
-		} else if y + iy == size || y + iy < 0 || (iy != 0 && snail[x + (iy + y) * size] != -1) {
+		} else if y+iy == size || y+iy < 0 || (iy != 0 && snail[x+(iy+y)*size] != -1) {
 			ix = -iy
 			iy = 0
 		}
 		x += ix
 		y += iy
 
-		if cur == size * size {
+		if cur == size*size {
 			cur = 0
 		}
 	}
