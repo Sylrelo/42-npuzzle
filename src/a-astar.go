@@ -12,7 +12,7 @@ func GenerateNewNode(common *Common, open_set *PriorityQueue, open_hash map[stri
 	// uninformed 	f = h		; 		à l'air de fonctionner
 	// greedy 		f = g		; 		est-il fonctionnel ?
 
-	priority := current_node.parent_count + LinearConflict(new_board, common.goal, common.size)
+	priority := current_node.parent_count + common.heuristicFn(new_board, common.goal, common.size)
 
 	strb := fmt.Sprint(new_board)
 
@@ -67,18 +67,6 @@ func new_astar(common *Common, board []int) {
 	heap.Push(&open_set, item)
 	open_hash[fmt.Sprint(node.board)] = item
 
-	// switch heuristic {
-	// 	case MANHATTAN:
-	// 		solver.heuristic = ManhattanDistance
-	// 	case HAMMING:
-	// 		solver.heuristic = HammingDistance
-	// 	case LINEAR_CONFLICT:
-	// 		solver.heuristic = LinearConflict
-	// 	default:
-	// 		fmt.Println("Wrong heuristic")
-	// 		return
-	// }
-
 	ticker := time.NewTicker(1 * time.Second)
 	time_start := time.Now()
 
@@ -124,8 +112,6 @@ func new_astar(common *Common, board []int) {
 				complexity_in_time: complexity_in_time,
 				node:               node,
 			})
-
-			fmt.Println(common.goal, node.board)
 
 			GenerateHistory(common, node)
 			break

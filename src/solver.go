@@ -65,7 +65,7 @@ func SolutionFound(common *Common, result Result) {
 	//fmt.Printf("\tNumGC = %v\n", m.NumGC)
 
 	fmt.Printf("\033[1m\x1b[38;2;40;177;249m%-18s : \033[0m%d\n", "Number of moves", result.node.parent_count)
-	fmt.Printf("\033[1m\x1b[38;2;40;177;249m%-18s :\n", "Solution")
+	fmt.Printf("\033[1m\x1b[38;2;40;177;249m%-18s:\033[0m \n", "Solution")
 }
 
 func GenerateNextMoves(common *Common, current_node Node, direction int) (bool, []int, int) {
@@ -103,26 +103,29 @@ func GenerateNextMoves(common *Common, current_node Node, direction int) (bool, 
 	return zindex != current_node.zindex, new_board, zindex
 }
 
+func printMove(node Node, size int) {
+	switch node.move {
+	case NONE:
+		fmt.Print("INITIAL")
+	case UP:
+		fmt.Print("BAS")
+	case DOWN:
+		fmt.Print("HAUT")
+	case LEFT:
+		fmt.Print("DROITE")
+	case RIGHT:
+		fmt.Print("GAUCHE")
+	}
+	fmt.Println("")
+	PrintBoard(node.board, size)
+}
+
 func GenerateHistory(common *Common, node Node) {
 	var nodes []Node
 	var reversed_nodes []Node
 
 	tmp := node
 	for {
-		switch tmp.move {
-		case NONE:
-			fmt.Print("INITIAL")
-		case UP:
-			fmt.Print("BAS")
-		case DOWN:
-			fmt.Print("HAUT")
-		case LEFT:
-			fmt.Print("DROITE")
-		case RIGHT:
-			fmt.Print("GAUCHE")
-		}
-		fmt.Println("")
-		PrintBoard(tmp.board, common.size)
 		nodes = append(nodes, tmp)
 		if tmp.parent == nil {
 			break
@@ -132,6 +135,9 @@ func GenerateHistory(common *Common, node Node) {
 	for i := range nodes {
 		n := nodes[len(nodes)-1-i]
 		reversed_nodes = append(reversed_nodes, n)
+		if common.verbose {
+			printMove(n, common.size)
+		}
 	}
 	for _, n := range reversed_nodes {
 		switch n.move {
@@ -148,5 +154,5 @@ func GenerateHistory(common *Common, node Node) {
 		}
 		fmt.Print(" > ")
 	}
-	fmt.Print("\n")
+	fmt.Print("The End 👰‍♀️💍👰💍👰‍♂️  🍼👶👧🧒👦👩🧑🧑‍🦲🛝\n")
 }

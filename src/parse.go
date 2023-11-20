@@ -1,16 +1,23 @@
 package main
 
 import (
-	"bufio"
+	"flag"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
 )
 
-func ParseContent(content string) (int, []int) {
+func ParseContent(content string, heuristicName string, verbose bool) (int, []int, HeuriFunc, bool) {
 	var size int
 	var result []int
+
+	heurMap := map[string]HeuriFunc{
+		"MANHATTAN": ManhattanDistance,
+		"MISPLACED": HammingDistance,
+		"LINEARCONFLICT": LinearConflict,
+		"EUCLIDIAN": EuclideanDistance,
+	}
 
 	size = -1
 	content_splitted := strings.Split(content, "\n")
@@ -42,40 +49,62 @@ func ParseContent(content string) (int, []int) {
 			}
 		}
 	}
-	return size, result
+	return size, result, heurMap[heuristicName], verbose
 }
 
-func Parse() (int, []int) {
-	args := os.Args[1:]
+func CheckHeuristicName(heuristicName string) bool {
+	possibleHeurNames := [4]string{"MANHATTAN", "MISPLACED", "LINEARCONFLICT", "EUCLIDIAN"}
 
-	// filepath 	:= flag.String("file", "", "The input file for the puzzle")
+	for _, possibleName := range possibleHeurNames {
+		if heuristicName == possibleName {
+			return true
+		}
+	}
+	return false
+}
+
+func Parse() (int, []int, HeuriFunc, bool) {
+	// args := os.Args[1:]
+
+	filepath := flag.String("file", "", "Path to the puzzle file")
+	verbose := flag.Bool("v", false, "Enables board overview through resolution")
 	// greedy 		:= flag.Bool("g", false, "This flag enable the greedy-search")
 	// uniform 		:= flag.Bool("u", false, "This flag enable the uniform-cost search")
 	// algo 		:= flag.String("a", "", "Run the specified algorithm only [ ASTAR, IDASTAR, BFS, DSF ]")
-	// heuristic 	:= flag.String("h", "", "Run the specified heuristic only [ MANHATTAN, MISPLACED, LINEARCONFLICT ]")
-	// flag.Parse()
-
-	if len(args) > 0 {
-		if args[0] == "-f" {
-			if len(args) > 1 {
-				data, err := os.ReadFile(args[1])
-				if err != nil {
-					fmt.Println("Error reading file", args[1])
-					os.Exit(1)
-				}
-				return ParseContent(string(data))
-			} else {
-				fmt.Println("You must specify a file")
-				os.Exit(1)
-			}
-		}
-	} else {
-		reader := bufio.NewReader(os.Stdin)
-		content, _ := reader.ReadString(0)
-		return ParseContent(content)
+	heuristic := flag.String("h", "MANHATTAN", "Run the specified heuristic. Only [ MANHATTAN, MISPLACED, LINEARCONFLICT ]")
+	flag.Parse()
+	data, err := os.ReadFile(*filepath)
+	if err != nil {
+		fmt.Println("Error reading file", *filepath)
+		os.Exit(1)
 	}
+	if !CheckHeuristicName(*heuristic) {
+		fmt.Println("Error in heuristic choice : must be one of [ MANHATTAN, MISPLACED, LINEARCONFLICT ] and not " + *heuristic)
+		os.Exit(1)
+	}
+	return ParseContent(string(data), *heuristic, *verbose)
+
+	// if len(args) > 0 {
+	// 	if args[0] == "-f" {
+	// 		if len(args) > 1 {
+	// 			data, err := os.ReadFile(args[1])
+	// 			if err != nil {
+	// 				fmt.Println("Error reading file", args[1])
+	// 				os.Exit(1)
+	// 			}
+	// 			return ParseContent(string(data))
+	// 		} else {
+	// 			fmt.Println("You must specify a file")
+	// 			os.Exit(1)
+	// 		}
+	// 	}
+	// } else {
+	// 	reader := bufio.NewReader(os.Stdin)
+	// 	content, _ := reader.ReadString(0)
+	// 	return ParseContent(content)
+	// }
 
 	fmt.Println("Parsing failed for unknown reason.")
 	os.Exit(1)
-	return -1, nil
+	return -1, nil, nil, false
 }

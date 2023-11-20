@@ -39,20 +39,20 @@ func IDA(common *Common, board []int) {
 		zindex:       FindIndex(board, 0)}
 
 
-	threshold	:= LinearConflict(board, common.goal, common.size)
+	threshold	:= common.heuristicFn(board, common.goal, common.size)
 	path		:= New()
 
 	path.Push(node)
 
 	for {
-		result, nbound := IDA_Start(common, node, 0, threshold, 0)
+		result, nbound, node := IDA_Start(common, node, 0, threshold, 0)
 
 		if result == ERROR {
 			fmt.Println("ERROR")
 		}
 		if result == FOUND {
 			fmt.Println("C'est trouvé !")
-			fmt.Println(result)
+			GenerateHistory(common, node)
 			os.Exit(1)
 		}
 		if result == NOTHING && nbound == int(^uint(0) >> 1) {
@@ -66,31 +66,30 @@ func IDA(common *Common, board []int) {
 	}
 }
 
-func IDA_Start(common *Common, node Node, cost int, threshold int, oy int) (int, int) {
+func IDA_Start(common *Common, node Node, cost int, threshold int, oy int) (int, int, Node) {
 
 	
-	ncost	:= node.parent_count + cost + LinearConflict(node.board, common.goal, common.size)
+	ncost	:= node.parent_count + cost + common.heuristicFn(node.board, common.goal, common.size)
 	min		:= int(^uint(0) >> 1)
 
 	if ncost > threshold {
-		return NOTHING, ncost
+		return NOTHING, ncost, node
 	}
 
 	if Compare(common.goal, node.board) {
-		fmt.Println(node.parent_count, node.board)
-		return FOUND, 0
+		return FOUND, 0, node
 	}
 	for _, successor := range IDA_NextMoves(common, node) {
-		successor_cost := cost + LinearConflict(node.board, successor.board, common.size)
-		result, nbound := IDA_Start(common, successor, successor_cost, threshold, oy + 1)
+		successor_cost := cost + common.heuristicFn(node.board, successor.board, common.size)
+		result, nbound, node := IDA_Start(common, successor, successor_cost, threshold, oy + 1)
 		if result == FOUND {
-			return FOUND, 0
+			return FOUND, 0, node
 		}
 		if nbound < min {
 			min = nbound
 		}
 	}
-	return NOTHING, min
+	return NOTHING, min, node
 }
 
 
