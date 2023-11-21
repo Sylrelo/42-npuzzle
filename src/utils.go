@@ -5,13 +5,13 @@ import (
 )
 
 var heurMap = map[string]HeuriFunc{
-	"MANHATTAN": ManhattanDistance,
-	"MISPLACED": HammingDistance,
+	"MANHATTAN":      ManhattanDistance,
+	"MISPLACED":      HammingDistance,
 	"LINEARCONFLICT": LinearConflict,
-	"EUCLIDIAN": EuclideanDistance,
+	"EUCLIDIAN":      EuclideanDistance,
 }
 
-func FindIndex(haystack []int, needle int) int {
+func FindIndex(haystack []int8, needle int8) int {
 	for i, n := range haystack {
 		if needle == n {
 			return i
@@ -20,7 +20,7 @@ func FindIndex(haystack []int, needle int) int {
 	return -1
 }
 
-func Compare(a []int, b []int) bool {
+func Compare(a []int8, b []int8) bool {
 	count := 0
 	for i, n := range a {
 		if b[i] == n {
@@ -40,7 +40,7 @@ func PrintBoardOnliner(board []int, size int) {
 	fmt.Println("")
 
 }
-func PrintBoard(board []int, size int) {
+func PrintBoard(board []int8, size int) {
 	for j := 0; j < size; j++ {
 		for i := 0; i < size; i++ {
 			if board[size*j+i] == 0 {
@@ -53,9 +53,9 @@ func PrintBoard(board []int, size int) {
 	fmt.Println("\n ")
 }
 
-func GenerateSnail(size int) []int {
-	snail := make([]int, 0)
-	cur := 1
+func GenerateSnail(size int) []int8 {
+	snail := make([]int8, 0)
+	cur := int8(1)
 	x := 0
 	ix := 1
 	y := 0
@@ -81,7 +81,7 @@ func GenerateSnail(size int) []int {
 		x += ix
 		y += iy
 
-		if cur == size*size {
+		if int(cur) == size*size {
 			cur = 0
 		}
 	}

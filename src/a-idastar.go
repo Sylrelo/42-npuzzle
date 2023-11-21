@@ -29,7 +29,7 @@ func IDA_NextMoves(common *Common, node Node) []Node {
 	return nodes
 }
 
-func IDA(common *Common, board []int) {
+func IDA(common *Common, board []int8) {
 	node := Node{
 		board:        board,
 		move:         NONE,

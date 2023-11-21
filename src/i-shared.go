@@ -31,7 +31,7 @@ type LinearConflictHelper struct {
 **
  */
 
-type HeuristicFunc func(board []int, goal []int, size int) int
+type HeuristicFunc func(board []int8, goal []int8, size int) int
 
 /*
 **
@@ -39,20 +39,20 @@ type HeuristicFunc func(board []int, goal []int, size int) int
 
 type Node struct {
 	parent       *Node
-	board        []int
+	board        []int8
 	move         int
 	cost         int
 	parent_count int
 	zindex       int
 }
 
-type HeuriFunc func([]int, []int, int) int
+type HeuriFunc func([]int8, []int8, int) int
 
 type Common struct {
-	goal        []int
-	size        int
-	heuristic 	string
-	verbose 	bool
+	goal      []int8
+	size      int
+	heuristic string
+	verbose   bool
 }
 
 type Result struct {

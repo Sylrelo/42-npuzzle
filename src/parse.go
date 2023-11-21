@@ -9,11 +9,13 @@ import (
 	"strings"
 )
 
-func checkNums(board []int, size int) {
+func checkNums(board []int8, size int) {
 	boardCopy := make([]int, len(board))
 
-	copy(boardCopy, board)
-	sort.Ints(boardCopy)
+	for i := 0; i < size*size; i++ {
+		boardCopy[i] = int(board[i])
+	}
+	sort.Ints((boardCopy))
 	for i := 0; i < size*size; i++ {
 		if boardCopy[i] != i {
 			fmt.Println("Error puzzle : Wrong numbers")
@@ -22,9 +24,9 @@ func checkNums(board []int, size int) {
 	}
 }
 
-func ParseContent(content string, heuristicName string, verbose bool) (int, []int, string, bool) {
+func ParseContent(content string, heuristicName string, verbose bool) (int, []int8, string, bool) {
 	var size int
-	var result []int
+	var result []int8
 
 	size = -1
 	content_splitted := strings.Split(content, "\n")
@@ -52,7 +54,7 @@ func ParseContent(content string, heuristicName string, verbose bool) (int, []in
 						fmt.Println("Error puzzle, line", line_number+1)
 						os.Exit(0)
 					}
-					result = append(result, atoi)
+					result = append(result, int8(atoi))
 				}
 			}
 		}
@@ -76,7 +78,7 @@ func CheckHeuristicName(heuristicName string) bool {
 	return false
 }
 
-func Parse() (int, []int, string, bool) {
+func Parse() (int, []int8, string, bool) {
 
 	filepath := flag.String("file", "", "Path to the puzzle file")
 	verbose := flag.Bool("v", false, "Enables board overview through resolution")

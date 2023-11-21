@@ -8,7 +8,7 @@ import (
 /*
 ** Number of missplaced tiles
  */
-func HammingDistance(board []int, goal []int, size int) int {
+func HammingDistance(board []int8, goal []int8, size int) int {
 	var total int = 0
 
 	for i := range board {
@@ -27,16 +27,16 @@ func HammingDistance(board []int, goal []int, size int) int {
 ** [x] [ ] [ ] [ ] [ ]
 ** [x] [ ] [ ] [ ] [ ]
 ** [s] [ ] [ ] [ ] [ ]
-*/
+ */
 
-func ManhattanDistance(board []int, goal []int, size int) int {
+func ManhattanDistance(board []int8, goal []int8, size int) int {
 	var total float64
 
 	total = 0
 	for i := range board {
 		if board[i] != 0 {
 			pos := FindIndex(goal, board[i])
-			total += math.Abs(float64(i % size - pos % size)) + math.Abs(float64(i / size - pos / size))
+			total += math.Abs(float64(i%size-pos%size)) + math.Abs(float64(i/size-pos/size))
 		}
 	}
 	return int(total)
@@ -49,9 +49,9 @@ func ManhattanDistance(board []int, goal []int, size int) int {
 ** [ ] [ ] [x] [ ] [ ]
 ** [ ] [x] [ ] [ ] [ ]
 ** [s] [ ] [ ] [ ] [ ]
-*/
+ */
 
-func EuclideanDistance(board []int, goal []int, size int) int {
+func EuclideanDistance(board []int8, goal []int8, size int) int {
 	var total float64
 
 	for i := range board {
@@ -69,25 +69,25 @@ func EuclideanDistance(board []int, goal []int, size int) int {
 
 /*
 **
-*/
+ */
 
-func LinearConflict(board []int, goal []int, size int) int {
-	var linear 		LinearConflictHelper
+func LinearConflict(board []int8, goal []int8, size int) int {
+	var linear LinearConflictHelper
 
-	conflicts 		:= 0
-	glen 			:= len(goal)
-	linear.board 	= make([]vec2i, 0)
-	linear.goal 	= make([]vec2i, 0)
+	conflicts := 0
+	glen := len(goal)
+	linear.board = make([]vec2i, 0)
+	linear.goal = make([]vec2i, 0)
 
 	for i := 0; i < glen; i++ {
-			gi 	:= FindIndex(goal, i)
-			gix := gi % size
-			giy := gi / size
-			bi 	:= FindIndex(board, i)
-			bix := bi % size
-			biy := bi / size
-			linear.board = append(linear.board, vec2i{bix, biy})
-			linear.goal = append(linear.goal, vec2i{gix, giy})
+		gi := FindIndex(goal, int8(i))
+		gix := gi % size
+		giy := gi / size
+		bi := FindIndex(board, int8(i))
+		bix := bi % size
+		biy := bi / size
+		linear.board = append(linear.board, vec2i{bix, biy})
+		linear.goal = append(linear.goal, vec2i{gix, giy})
 	}
 
 	for i := 1; i < glen; i++ {
@@ -104,5 +104,5 @@ func LinearConflict(board []int, goal []int, size int) int {
 			}
 		}
 	}
-	return 2 * conflicts + ManhattanDistance(board, goal, size)
+	return 2*conflicts + ManhattanDistance(board, goal, size)
 }

@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func GenerateNewNode(common *Common, open_set *PriorityQueue, open_hash map[string]*Item, closed map[string]Node, current_node Node, new_board []int, zindex int, direction int) {
+func GenerateNewNode(common *Common, open_set *PriorityQueue, open_hash map[string]*Item, closed map[string]Node, current_node Node, new_board []int8, zindex int, direction int) {
 
 	// informed		f = g + h	;		à l'air de fonctionner
 	// uninformed 	f = h		; 		à l'air de fonctionner
@@ -45,7 +45,7 @@ func GenerateNewNode(common *Common, open_set *PriorityQueue, open_hash map[stri
 	open_hash[strb] = item
 }
 
-func new_astar(common *Common, board []int) {
+func new_astar(common *Common, board []int8) {
 
 	var node Node
 	solved := false

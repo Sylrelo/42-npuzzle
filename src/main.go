@@ -7,7 +7,7 @@ func bToMb(b uint64) int {
 
 func main() {
 	var common Common
-	var initial_board []int
+	var initial_board []int8
 
 	common.size, initial_board, common.heuristic, common.verbose = Parse()
 	common.goal = GenerateSnail(common.size)

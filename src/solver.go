@@ -52,8 +52,8 @@ func SolutionFound(common *Common, result Result, algo string) {
 	fmt.Printf("\033[1m\x1b[38;2;40;177;249m%-18s:\033[0m \n", "Solution :")
 }
 
-func GenerateNextMoves(common *Common, current_node Node, direction int) (bool, []int, int) {
-	new_board := make([]int, common.size*common.size)
+func GenerateNextMoves(common *Common, current_node Node, direction int) (bool, []int8, int) {
+	new_board := make([]int8, common.size*common.size)
 	zindex := current_node.zindex
 	copy(new_board, current_node.board)
 
