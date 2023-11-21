@@ -18,19 +18,6 @@ func formatNumber(num int) string {
 	return str
 }
 
-func GetHeuristicName(heuristic int) string {
-	switch heuristic {
-	case MANHATTAN:
-		return "Manhattan Distance"
-	case HAMMING:
-		return "Hamming Distance (Missplaced Tiles)"
-	case LINEAR_CONFLICT:
-		return "Linear Conflict (+ Manhattan Distance)"
-	default:
-		return "---"
-	}
-}
-
 func factorial(x *big.Int) *big.Int {
 	n := big.NewInt(1)
 	if x.Cmp(big.NewInt(0)) == 0 {
@@ -39,7 +26,7 @@ func factorial(x *big.Int) *big.Int {
 	return n.Mul(x, factorial(n.Sub(x, n)))
 }
 
-func SolutionFound(common *Common, result Result) {
+func SolutionFound(common *Common, result Result, algo string) {
 	var m runtime.MemStats
 	time_elapsed := time.Since(result.time_start)
 
@@ -48,8 +35,8 @@ func SolutionFound(common *Common, result Result) {
 	fmt.Print("\033[H\033[2J")
 	fmt.Printf("\033[1;32m%s\033[0m\n", "√ Solution found")
 
-	fmt.Printf("\033[1;33m%-18s : \033[0m%s\n", "Algorithm", "--")
-	fmt.Printf("\033[1;33m%-18s : \033[0m%s\n\n", "Heuristic", "--")
+	fmt.Printf("\033[1;33m%-18s : \033[0m%s\n", "Algorithm", algo)
+	fmt.Printf("\033[1;33m%-18s : \033[0m%s\n\n", "Heuristic", common.heuristic)
 
 	fmt.Printf("\033[1m%-18s : \033[0m%.4fs\n", "Time taken", time_elapsed.Seconds())
 	fmt.Printf("\033[1m%-18s : \033[0m%s\n", "Complexity in size", formatNumber(result.complexity_in_size))
@@ -61,11 +48,8 @@ func SolutionFound(common *Common, result Result) {
 	fmt.Printf("\033[1m\x1b[38;2;140;77;249m%-18s : \033[0m%6s Mb\n", "Allocated", formatNumber(bToMb(m.Alloc)))
 	fmt.Printf("\033[1m\x1b[38;2;140;77;249m%-18s : \033[0m%6s Mb\n\n", "Total allocated", formatNumber(bToMb(m.TotalAlloc)))
 
-	//fmt.Printf("\tSys = %v MiB\n", bToMb(m.Sys))
-	//fmt.Printf("\tNumGC = %v\n", m.NumGC)
-
 	fmt.Printf("\033[1m\x1b[38;2;40;177;249m%-18s : \033[0m%d\n", "Number of moves", result.node.parent_count)
-	fmt.Printf("\033[1m\x1b[38;2;40;177;249m%-18s:\033[0m \n", "Solution")
+	fmt.Printf("\033[1m\x1b[38;2;40;177;249m%-18s:\033[0m \n", "Solution :")
 }
 
 func GenerateNextMoves(common *Common, current_node Node, direction int) (bool, []int, int) {
@@ -103,7 +87,7 @@ func GenerateNextMoves(common *Common, current_node Node, direction int) (bool, 
 	return zindex != current_node.zindex, new_board, zindex
 }
 
-func printMove(node Node, size int) {
+func printMove(node Node, size int, verbose bool) {
 	switch node.move {
 	case NONE:
 		fmt.Print("INITIAL")
@@ -116,8 +100,12 @@ func printMove(node Node, size int) {
 	case RIGHT:
 		fmt.Print("GAUCHE")
 	}
-	fmt.Println("")
-	PrintBoard(node.board, size)
+	if verbose {
+		fmt.Println("")
+		PrintBoard(node.board, size)
+	} else {
+		fmt.Print(" > ")
+	}
 }
 
 func GenerateHistory(common *Common, node Node) {
@@ -136,23 +124,11 @@ func GenerateHistory(common *Common, node Node) {
 		n := nodes[len(nodes)-1-i]
 		reversed_nodes = append(reversed_nodes, n)
 		if common.verbose {
-			printMove(n, common.size)
+			printMove(n, common.size, true)
 		}
 	}
 	for _, n := range reversed_nodes {
-		switch n.move {
-		case NONE:
-			fmt.Print("INITIAL")
-		case UP:
-			fmt.Print("BAS")
-		case DOWN:
-			fmt.Print("HAUT")
-		case LEFT:
-			fmt.Print("DROITE")
-		case RIGHT:
-			fmt.Print("GAUCHE")
-		}
-		fmt.Print(" > ")
+		printMove(n, common.size, false)
 	}
 	fmt.Print("The End 👰‍♀️💍👰💍👰‍♂️  🍼👶👧🧒👦👩🧑🧑‍🦲🛝\n")
 }

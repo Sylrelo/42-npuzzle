@@ -39,7 +39,7 @@ func IDA(common *Common, board []int) {
 		zindex:       FindIndex(board, 0)}
 
 
-	threshold	:= common.heuristicFn(board, common.goal, common.size)
+	threshold	:= heurMap[common.heuristic](board, common.goal, common.size)
 	path		:= New()
 
 	path.Push(node)
@@ -69,7 +69,7 @@ func IDA(common *Common, board []int) {
 func IDA_Start(common *Common, node Node, cost int, threshold int, oy int) (int, int, Node) {
 
 	
-	ncost	:= node.parent_count + cost + common.heuristicFn(node.board, common.goal, common.size)
+	ncost	:= node.parent_count + cost + heurMap[common.heuristic](node.board, common.goal, common.size)
 	min		:= int(^uint(0) >> 1)
 
 	if ncost > threshold {
@@ -80,7 +80,7 @@ func IDA_Start(common *Common, node Node, cost int, threshold int, oy int) (int,
 		return FOUND, 0, node
 	}
 	for _, successor := range IDA_NextMoves(common, node) {
-		successor_cost := cost + common.heuristicFn(node.board, successor.board, common.size)
+		successor_cost := cost + heurMap[common.heuristic](node.board, successor.board, common.size)
 		result, nbound, node := IDA_Start(common, successor, successor_cost, threshold, oy + 1)
 		if result == FOUND {
 			return FOUND, 0, node

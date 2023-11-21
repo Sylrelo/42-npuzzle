@@ -12,7 +12,7 @@ func GenerateNewNode(common *Common, open_set *PriorityQueue, open_hash map[stri
 	// uninformed 	f = h		; 		à l'air de fonctionner
 	// greedy 		f = g		; 		est-il fonctionnel ?
 
-	priority := current_node.parent_count + common.heuristicFn(new_board, common.goal, common.size)
+	priority := current_node.parent_count + heurMap[common.heuristic](new_board, common.goal, common.size)
 
 	strb := fmt.Sprint(new_board)
 
@@ -48,6 +48,7 @@ func GenerateNewNode(common *Common, open_set *PriorityQueue, open_hash map[stri
 func new_astar(common *Common, board []int) {
 
 	var node Node
+	solved := false
 
 	complexity_in_size := 0
 	complexity_in_time := 0
@@ -77,14 +78,12 @@ func new_astar(common *Common, board []int) {
 			select {
 			case <-ticker.C:
 				fmt.Print("\033[H\033[2J")
-				//PrintBoard(node.board, common.size)
 
 				fmt.Println("Explored nodes : ", len(closed))
 				fmt.Println("Opens nodes : ", open_set.Len(), len(open_hash), open_set.Len() == len(open_hash))
 				fmt.Println(len(closed)-old_closed_count, " nodes / s")
 				fmt.Println(open_set.Len()-old_open_count, " nodes / s")
 
-				//old_closed_count = len(solver.closed_set2)
 				old_closed_count = len(closed)
 				old_open_count = open_set.Len()
 			}
@@ -106,23 +105,26 @@ func new_astar(common *Common, board []int) {
 		}
 
 		if Compare(node.board, common.goal) {
+			solved = true
 			SolutionFound(common, Result{
 				time_start:         time_start,
 				complexity_in_size: complexity_in_size,
 				complexity_in_time: complexity_in_time,
 				node:               node,
-			})
+			}, "A*")
 
 			GenerateHistory(common, node)
 			break
 		}
-
 		for dir := UP; dir <= RIGHT; dir++ {
 			if moved, board, zindex := GenerateNextMoves(common, node, dir); moved {
 				GenerateNewNode(common, &open_set, open_hash, closed, node, board, zindex, dir)
 			}
 		}
 
+	}
+	if !solved {
+		println("This puzzle is not solvable.")
 	}
 
 }

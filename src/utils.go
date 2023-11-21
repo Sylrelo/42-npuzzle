@@ -4,6 +4,13 @@ import (
 	"fmt"
 )
 
+var heurMap = map[string]HeuriFunc{
+	"MANHATTAN": ManhattanDistance,
+	"MISPLACED": HammingDistance,
+	"LINEARCONFLICT": LinearConflict,
+	"EUCLIDIAN": EuclideanDistance,
+}
+
 func FindIndex(haystack []int, needle int) int {
 	for i, n := range haystack {
 		if needle == n {
@@ -11,24 +18,6 @@ func FindIndex(haystack []int, needle int) int {
 		}
 	}
 	return -1
-}
-
-func Same(closed [][]int, board []int, size int) bool {
-	for _, set := range closed {
-		count := 0
-		for i, n := range set {
-			if board[i] == n {
-				count++
-			} else {
-				break
-			}
-		}
-		if count == size {
-			return true
-		}
-		_ = set
-	}
-	return false
 }
 
 func Compare(a []int, b []int) bool {
@@ -39,25 +28,6 @@ func Compare(a []int, b []int) bool {
 		}
 	}
 	return count == len(a)
-}
-
-func CompareRocol(a []int, b []int, size int, index int) bool {
-	count := 0
-
-	for row := index + 1; row < size; row++ {
-		//fmt.Print(a[row + index * size], "  ")
-		if a[row+index*size] == b[row+index*size] {
-			count++
-		}
-	}
-
-	for col := index; col < size; col++ {
-		//fmt.Print(a[index + col * size], "  ")
-		if a[index+col*size] == b[index+col*size] {
-			count++
-		}
-	}
-	return count == size*2
 }
 
 func PrintBoardOnliner(board []int, size int) {
@@ -80,14 +50,6 @@ func PrintBoard(board []int, size int) {
 		}
 		fmt.Println("")
 	}
-
-	// for i := 0; i < size; i++ {
-	// 	fmt.Print(board[(size)+i], " ")
-	// }
-	// fmt.Println("")
-	// for i := 0; i < size; i++ {
-	// 	fmt.Print(board[(size*2)+i], " ")
-	// }
 	fmt.Println("\n ")
 }
 

@@ -51,7 +51,7 @@ type HeuriFunc func([]int, []int, int) int
 type Common struct {
 	goal        []int
 	size        int
-	heuristicFn HeuriFunc
+	heuristic 	string
 	verbose 	bool
 }
 

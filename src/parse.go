@@ -4,20 +4,27 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
 
-func ParseContent(content string, heuristicName string, verbose bool) (int, []int, HeuriFunc, bool) {
+func checkNums(board []int, size int) {
+	boardCopy := make([]int, len(board))
+
+	copy(boardCopy, board)
+	sort.Ints(boardCopy)
+	for i := 0; i < size*size; i++ {
+		if boardCopy[i] != i {
+			fmt.Println("Error puzzle : Wrong numbers")
+			os.Exit(0)
+		}
+	}
+}
+
+func ParseContent(content string, heuristicName string, verbose bool) (int, []int, string, bool) {
 	var size int
 	var result []int
-
-	heurMap := map[string]HeuriFunc{
-		"MANHATTAN": ManhattanDistance,
-		"MISPLACED": HammingDistance,
-		"LINEARCONFLICT": LinearConflict,
-		"EUCLIDIAN": EuclideanDistance,
-	}
 
 	size = -1
 	content_splitted := strings.Split(content, "\n")
@@ -26,6 +33,7 @@ func ParseContent(content string, heuristicName string, verbose bool) (int, []in
 		if len(line) < 1 || line[0] == '#' {
 			continue
 		}
+		line = strings.Split(line, "#")[0]
 		if size == -1 {
 			atoi, err := strconv.Atoi(line)
 			if err != nil {
@@ -49,7 +57,12 @@ func ParseContent(content string, heuristicName string, verbose bool) (int, []in
 			}
 		}
 	}
-	return size, result, heurMap[heuristicName], verbose
+	if len(result) != size*size {
+		fmt.Println("Error puzzle: wrong size")
+		os.Exit(0)
+	}
+	checkNums(result, size)
+	return size, result, heuristicName, verbose
 }
 
 func CheckHeuristicName(heuristicName string) bool {
@@ -63,15 +76,13 @@ func CheckHeuristicName(heuristicName string) bool {
 	return false
 }
 
-func Parse() (int, []int, HeuriFunc, bool) {
-	// args := os.Args[1:]
+func Parse() (int, []int, string, bool) {
 
 	filepath := flag.String("file", "", "Path to the puzzle file")
 	verbose := flag.Bool("v", false, "Enables board overview through resolution")
 	// greedy 		:= flag.Bool("g", false, "This flag enable the greedy-search")
 	// uniform 		:= flag.Bool("u", false, "This flag enable the uniform-cost search")
-	// algo 		:= flag.String("a", "", "Run the specified algorithm only [ ASTAR, IDASTAR, BFS, DSF ]")
-	heuristic := flag.String("h", "MANHATTAN", "Run the specified heuristic. Only [ MANHATTAN, MISPLACED, LINEARCONFLICT ]")
+	heuristic := flag.String("h", "MANHATTAN", "Run the specified heuristic. Only [ MANHATTAN, MISPLACED, LINEARCONFLICT EUCLIDIAN ]")
 	flag.Parse()
 	data, err := os.ReadFile(*filepath)
 	if err != nil {
@@ -79,32 +90,8 @@ func Parse() (int, []int, HeuriFunc, bool) {
 		os.Exit(1)
 	}
 	if !CheckHeuristicName(*heuristic) {
-		fmt.Println("Error in heuristic choice : must be one of [ MANHATTAN, MISPLACED, LINEARCONFLICT ] and not " + *heuristic)
+		fmt.Println("Error in heuristic choice : must be one of [ MANHATTAN, MISPLACED, LINEARCONFLICT EUCLIDIAN ] and not " + *heuristic)
 		os.Exit(1)
 	}
 	return ParseContent(string(data), *heuristic, *verbose)
-
-	// if len(args) > 0 {
-	// 	if args[0] == "-f" {
-	// 		if len(args) > 1 {
-	// 			data, err := os.ReadFile(args[1])
-	// 			if err != nil {
-	// 				fmt.Println("Error reading file", args[1])
-	// 				os.Exit(1)
-	// 			}
-	// 			return ParseContent(string(data))
-	// 		} else {
-	// 			fmt.Println("You must specify a file")
-	// 			os.Exit(1)
-	// 		}
-	// 	}
-	// } else {
-	// 	reader := bufio.NewReader(os.Stdin)
-	// 	content, _ := reader.ReadString(0)
-	// 	return ParseContent(content)
-	// }
-
-	fmt.Println("Parsing failed for unknown reason.")
-	os.Exit(1)
-	return -1, nil, nil, false
 }
